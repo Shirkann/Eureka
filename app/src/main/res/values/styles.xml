@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+
+    <style name="BottomNavText.Unselected">
+        <item name="android:fontFamily">@font/notosanshebrew_regular</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">#666569</item>
+    </style>
+
+    <style name="BottomNavText.Selected">
+        <item name="android:fontFamily">@font/notosanshebrew_semibold</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">#016DEB</item>
+    </style>
+
+
+    <style name="BottomNavText">
+    </style>
+
+</resources>
