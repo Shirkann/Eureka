@@ -4,13 +4,13 @@
 
 
     <style name="BottomNavText.Unselected">
-        <item name="android:fontFamily">@font/notosanshebrew_regular</item>
+        <item name="fontFamily">@font/notosanshebrew_regular</item>
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">#666569</item>
     </style>
 
     <style name="BottomNavText.Selected">
-        <item name="android:fontFamily">@font/notosanshebrew_semibold</item>
+        <item name="fontFamily">@font/notosanshebrew_semibold</item>
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">#016DEB</item>
     </style>
@@ -18,5 +18,23 @@
 
     <style name="BottomNavText">
     </style>
+    <style name="SegmentedText">
+    </style>
+    <style name="SegmentedText.Selected">
+        <item name="fontFamily">@font/notosanshebrew_semibold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="SegmentedText.Unselected">
+        <item name="fontFamily">@font/notosanshebrew_light</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+
+    <style name="ShapeCapsule">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
 
 </resources>
