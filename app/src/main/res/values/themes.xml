@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.Eureka" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Base application theme -->
+    <style name="Base.Theme.Eureka" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <!-- Colors -->
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorPrimaryDark">@color/blue_dark</item>
+        <item name="colorAccent">@color/blue</item>
+
+        <!-- Font -->
+        <item name="android:fontFamily">@font/noto_sans_hebrew</item>
+        <item name="fontFamily">@font/noto_sans_hebrew</item>
+
+        <!-- Disable global ripple/highlight -->
+        <item name="android:colorControlHighlight">@android:color/transparent</item>
+        <item name="colorControlHighlight">@android:color/transparent</item>
+
+        <!-- Disable global tint (normal/activated) -->
+        <item name="android:colorControlNormal">@android:color/transparent</item>
+        <item name="android:colorControlActivated">@android:color/transparent</item>
+        <item name="colorControlNormal">@android:color/transparent</item>
+        <item name="colorControlActivated">@android:color/transparent</item>
+
+    </style>
+
+    <!-- App theme -->
+    <style name="Theme.Eureka" parent="Base.Theme.Eureka" />
+
 </resources>
