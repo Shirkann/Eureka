@@ -4,56 +4,73 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@android:color/transparent">
 
-    <com.google.android.material.button.MaterialButtonToggleGroup
-        android:id="@+id/segmented"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@drawable/segmented_container"
-        app:singleSelection="true"
-        app:selectionRequired="true"
-        app:checkedButton="@id/btn_lost">
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_white_panel"
+        android:paddingTop="24dp"
+        android:paddingBottom="24dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_lost"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="אבדות"
-            android:textAllCaps="false"
-            android:textColor="@color/segmented_button_text"
-            android:textAppearance="@style/SegmentedText.Unselected"
-            app:backgroundTint="@color/segmented_button_bg"
-            app:shapeAppearanceOverlay="@style/ShapeCapsule"
-            android:insetLeft="0dp"
-            android:insetRight="0dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp" />
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/segmented"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/segmented_container"
+            android:clipToPadding="false"
+            app:singleSelection="true"
+            app:selectionRequired="true"
+            app:checkedButton="@id/btn_lost">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_found"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="מציאות"
-            android:textAllCaps="false"
-            android:textColor="@color/segmented_button_text"
-            android:textAppearance="@style/SegmentedText.Unselected"
-            app:backgroundTint="@color/segmented_button_bg"
-            app:shapeAppearanceOverlay="@style/ShapeCapsule"
-            android:insetLeft="0dp"
-            android:insetRight="0dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_lost"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="אבדות"
+                android:textAllCaps="false"
+                android:textColor="@color/segmented_button_text"
+                app:backgroundTint="@color/segmented_button_bg"
+                app:cornerRadius="24dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:insetTop="0dp"
+                android:elevation="0dp"
+                android:stateListAnimator="@null"
 
-    </com.google.android.material.button.MaterialButtonToggleGroup>
+                android:insetBottom="0dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_found"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="מציאות"
+                android:textAllCaps="false"
+                android:textColor="@color/segmented_button_text"
+                app:backgroundTint="@color/segmented_button_bg"
+                app:cornerRadius="24dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:insetTop="0dp"
+                android:elevation="0dp"
+                android:stateListAnimator="@null"
+                android:insetBottom="0dp" />
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/home_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:background="#EDEDFA">
+
+    </FrameLayout>
 
 </LinearLayout>

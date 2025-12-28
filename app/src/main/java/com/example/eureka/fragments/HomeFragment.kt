@@ -21,6 +21,11 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // קוד של שירן זה מטפל בבאג של הבניית סקלטון על הפרגמנט
+        requireActivity()
+            .findViewById<View>(R.id.fragment_bg)
+            .setBackgroundColor(requireContext().getColor(R.color.home_bg))
+
         val group = view.findViewById<MaterialButtonToggleGroup>(R.id.segmented)
         val btnLost = view.findViewById<MaterialButton>(R.id.btn_lost)
         val btnFound = view.findViewById<MaterialButton>(R.id.btn_found)
@@ -51,14 +56,11 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // מצב התחלתי (במקרה שה-XML מסמן ברירת מחדל)
         val startChecked = group.checkedButtonId.takeIf { it != View.NO_ID } ?: R.id.btn_lost
         applyTextStyles(startChecked)
 
-        // תוכן התחלתי
         showText(if (startChecked == R.id.btn_lost) "רשימת אבדות" else "רשימת מציאות")
 
-        // מאזין לשינוי בחירה
         group.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
 

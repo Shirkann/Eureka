@@ -6,7 +6,7 @@
     <!-- App colors -->
     <color name="blue">#016DEB</color>
     <color name="blue_dark">#014FB0</color>
-
+    <color name="home_bg">#EDEDFA</color>
     <!-- Bottom nav -->
     <color name="gray">#666569</color>
 
