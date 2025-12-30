@@ -7,10 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.fragment.app.Fragment
-import com.example.eureka.fragments.HomeFragment
-import com.example.eureka.fragments.ProfileFragment
-import com.example.eureka.fragments.mapFragment
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -23,9 +21,8 @@ class MainActivity : AppCompatActivity() {
 
         val appBar = findViewById<AppBarLayout>(R.id.appbar)
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        val container = findViewById<View>(R.id.f1_wrapper)
 
-
+        // Insets
         ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
             val topInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
             v.updatePadding(top = topInset)
@@ -37,36 +34,24 @@ class MainActivity : AppCompatActivity() {
             v.updatePadding(bottom = bottomInset)
             insets
         }
+
         bottomNav.itemIconTintList = null
 
+        // NavController
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.f1_wrapper) as NavHostFragment
+        val navController = navHostFragment.navController
 
-        ViewCompat.setOnApplyWindowInsetsListener(container) { v, insets ->
-            val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(sys.left, 0, sys.right, 0)
-            insets
-        }
+        // מחבר את ה-BottomNav לגרף
+        bottomNav.setupWithNavController(navController)
 
+        // מסתיר/מציג AppBar + BottomNav לפי המסך הנוכחי
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val hideBars = destination.id == R.id.loginFragment ||
+                    destination.id == R.id.registerFragment
 
-
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.f1_wrapper, HomeFragment())
-                .commit()
-        }
-
-        bottomNav.setOnItemSelectedListener { item ->
-            val fragment = when (item.itemId) {
-                R.id.navigation_home -> HomeFragment()
-                R.id.navigation_profile -> ProfileFragment()
-                R.id.navigation_map -> mapFragment()
-                else -> HomeFragment()
-            }
-
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.f1_wrapper, fragment as Fragment)
-                .commit()
-
-            true
+            appBar.visibility = if (hideBars) View.GONE else View.VISIBLE
+            bottomNav.visibility = if (hideBars) View.GONE else View.VISIBLE
         }
     }
 }

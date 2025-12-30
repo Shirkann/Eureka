@@ -20,8 +20,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:strokeWidth="0dp"
-            android:elevation="0dp">
+            android:elevation="0dp"
+            app:strokeWidth="0dp">
 
             <ImageView
                 android:id="@+id/appbar_logo"
@@ -34,7 +34,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- 🔹 רקע מתחלף ל-Fragments -->
+    <!-- רקע מתחלף ל-Fragments (נשאר כמו אצלך) -->
     <View
         android:id="@+id/fragment_bg"
         android:layout_width="match_parent"
@@ -43,22 +43,26 @@
         android:layout_above="@id/bottom_navigation"
         android:background="@android:color/transparent" />
 
-    <!-- FRAGMENT CONTAINER -->
-    <FrameLayout
+    <!-- NAV HOST (במקום FrameLayout) -->
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/f1_wrapper"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/appbar"
         android:layout_above="@id/bottom_navigation"
-        android:background="@android:color/transparent" />
+        android:background="@android:color/transparent"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph" />
 
-    <!-- NAV BAR -->
+    <!-- BOTTOM NAV -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@drawable/bg_bottom_nav_round"
+        app:elevation="0dp"
         app:menu="@menu/bottom_nav"
         app:labelVisibilityMode="labeled"
         app:itemHorizontalTranslationEnabled="false"
@@ -66,7 +70,6 @@
         app:itemTextAppearanceActive="@style/BottomNavText.Selected"
         app:itemTextAppearanceInactive="@style/BottomNavText.Unselected"
         app:itemBackground="@android:color/transparent"
-        app:itemRippleColor="@android:color/transparent"
-        app:elevation="0dp" />
+        app:itemRippleColor="@android:color/transparent" />
 
 </RelativeLayout>

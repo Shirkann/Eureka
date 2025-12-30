@@ -1,7 +1,6 @@
 package com.example.eureka.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -10,21 +9,14 @@ import com.example.eureka.R
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 
-class HomeFragment : Fragment() {
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_home, container, false)
+class HomeFragment : Fragment(R.layout.fragment_home) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // קוד של שירן זה מטפל בבאג של הבניית סקלטון על הפרגמנט
         requireActivity()
-            .findViewById<View>(R.id.fragment_bg)
-            .setBackgroundColor(requireContext().getColor(R.color.home_bg))
+            .findViewById<View?>(R.id.fragment_bg)
+            ?.setBackgroundColor(requireContext().getColor(R.color.home_bg))
 
         val group = view.findViewById<MaterialButtonToggleGroup>(R.id.segmented)
         val btnLost = view.findViewById<MaterialButton>(R.id.btn_lost)
@@ -33,11 +25,11 @@ class HomeFragment : Fragment() {
 
         fun showText(text: String) {
             content.removeAllViews()
-            val tv = TextView(requireContext()).apply {
+            content.addView(TextView(requireContext()).apply
+            {
                 this.text = text
                 textSize = 18f
-            }
-            content.addView(tv)
+            })
         }
 
         fun applyTextStyles(checkedId: Int) {
@@ -58,12 +50,10 @@ class HomeFragment : Fragment() {
 
         val startChecked = group.checkedButtonId.takeIf { it != View.NO_ID } ?: R.id.btn_lost
         applyTextStyles(startChecked)
-
         showText(if (startChecked == R.id.btn_lost) "רשימת אבדות" else "רשימת מציאות")
 
         group.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
-
             applyTextStyles(checkedId)
 
             when (checkedId) {

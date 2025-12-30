@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <!-- ===================== -->
+    <!-- AUTH FLOW (Login/Register) -->
+    <!-- ===================== -->
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.eureka.fragments.LoginFragment"
+        android:label="Login">
+
+        <!-- Login -> Register -->
+        <action
+            android:id="@+id/action_login_to_register"
+            app:destination="@id/registerFragment" />
+
+        <!-- Login -> Main (Home) אחרי התחברות, בלי לחזור אחורה ל-Login -->
+        <action
+            android:id="@+id/action_login_to_home"
+            app:destination="@id/navigation_home"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.eureka.fragments.RegisterFragment"
+        android:label="Register" />
+
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.example.eureka.fragments.HomeFragment"
+        android:label="Home" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.eureka.fragments.ProfileFragment"
+        android:label="Profile" />
+
+    <fragment
+        android:id="@+id/navigation_map"
+        android:name="com.example.eureka.fragments.mapFragment"
+        android:label="Map" />
+
+</navigation>
