@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Eureka</string>
+    <string name="email">מייל</string>
+    <string name="emailhint">לדוגמא: israel.israeli@email.com</string>
+    <string name="passwordhint">לדוגמא: 123456</string>
+    <string name="password">סיסמא\n</string>
+    <string name="fullname">שם מלא\n</string>
+    <string name="fullnamehint">ישראל ישראלי\n</string>
+    <string name="registerDescription">הרשמה למערכת</string>
+    <string name="LoginDescription">התחברות</string>
+    <string name="registertext">אין לכם משתמש עדיין? הרשמה</string>
+    <string name="registerbuttontext">הרשמה</string>
 </resources>

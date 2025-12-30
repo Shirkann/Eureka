@@ -10,4 +10,10 @@
     <!-- Bottom nav -->
     <color name="gray">#666569</color>
 
+
+    <!-- login register -->
+    <color name="edit_bg">#F5F5F5</color>
+    <color name="main_font">#414045</color>
+    <color name="log_hint">#888888</color>
+
 </resources>
