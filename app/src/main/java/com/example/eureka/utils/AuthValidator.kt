@@ -12,4 +12,8 @@ object AuthValidator {
     fun isValidPassword(password: String): Boolean {
         return password.isNotBlank() && password.length >= 6
     }
+
+    fun hashPassword(password: String): String {
+        return password.hashCode().toString()
+    }
 }

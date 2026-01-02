@@ -7,8 +7,10 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
-import com.example.eureka.model.User
 import com.example.eureka.utils.AuthValidator
+import com.example.eureka.utils.AuthValidator.hashPassword
+import com.example.eureka.models.Model
+import com.example.eureka.models.User
 import com.google.android.material.textfield.TextInputEditText
 import java.util.UUID
 
@@ -47,11 +49,13 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                     val user = User(
                         id = UUID.randomUUID().toString(),
                         fullName = fullName,
-                        email = email
+                        email = email,
+                        avatar = null,
                     )
-
-                    toast("נרשמת בהצלחה ✅")
-                    findNavController().popBackStack()
+                    Model.shared.addUser(user) {
+                        toast("נרשמת בהצלחה ✅")
+                        findNavController().popBackStack()
+                    }
                 }
             }
         }
