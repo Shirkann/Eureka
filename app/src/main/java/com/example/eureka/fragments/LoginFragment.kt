@@ -14,20 +14,24 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
-import com.example.eureka.utils.AuthValidator
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
+    private lateinit var firebaseAuth: FirebaseAuth
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        firebaseAuth = FirebaseAuth.getInstance()
 
         val editTextEmail = view.findViewById<TextInputEditText>(R.id.emailInput)
         val editTextPassword = view.findViewById<TextInputEditText>(R.id.passwordInput)
         val loginButton = view.findViewById<Button>(R.id.loginButton)
         val registerButton = view.findViewById<TextView>(R.id.RegisterButton)
 
-        // טקסט לחיץ: "הרשמה"
+        // Clickable "Register" text
         val fullText = getString(R.string.registertext)
         val clickableWord = getString(R.string.registerbuttontext)
 
@@ -38,7 +42,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                // Navigation במקום Intent
                 findNavController().navigate(R.id.action_login_to_register)
             }
 
@@ -57,27 +60,25 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         registerButton.movementMethod = LinkMovementMethod.getInstance()
         registerButton.highlightColor = Color.TRANSPARENT
 
-        // כפתור התחברות
+        // Login button
         loginButton.setOnClickListener {
             val email = editTextEmail.text?.toString()?.trim().orEmpty()
             val password = editTextPassword.text?.toString()?.trim().orEmpty()
 
-            when {
-                !AuthValidator.isValidEmail(email) -> {
-                    toast("אימייל לא תקין")
-                    editTextEmail.requestFocus()
-                }
-
-                !AuthValidator.isValidPassword(password) -> {
-                    toast("סיסמה לא תקינה (לפחות 6 תווים)")
-                    editTextPassword.requestFocus()
-                }
-
-                else -> {
-                    toast("התחברת בהצלחה ✅")
-                    findNavController().navigate(R.id.action_login_to_home)
-                }
+            if (email.isBlank() || password.isBlank()) {
+                toast("נא למלא אימייל וסיסמה")
+                return@setOnClickListener
             }
+
+            firebaseAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(requireActivity()) { task ->
+                    if (task.isSuccessful) {
+                        toast("התחברת בהצלחה ✅")
+                        findNavController().navigate(R.id.action_login_to_home)
+                    } else {
+                        toast("שם משתמש או סיסמה לא נכונים")
+                    }
+                }
         }
     }
 

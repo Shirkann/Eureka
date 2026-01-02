@@ -7,17 +7,23 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
-import com.example.eureka.utils.AuthValidator
-import com.example.eureka.utils.AuthValidator.hashPassword
 import com.example.eureka.models.Model
 import com.example.eureka.models.User
+import com.example.eureka.utils.AuthValidator
 import com.google.android.material.textfield.TextInputEditText
-import java.util.UUID
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterFragment : Fragment(R.layout.fragment_register) {
 
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var firestore: FirebaseFirestore
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        firebaseAuth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
 
         val editTextEmail = view.findViewById<TextInputEditText>(R.id.emailInput)
         val editTextPassword = view.findViewById<TextInputEditText>(R.id.passwordInput)
@@ -46,16 +52,48 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                 }
 
                 else -> {
-                    val user = User(
-                        id = UUID.randomUUID().toString(),
-                        fullName = fullName,
-                        email = email,
-                        avatar = null,
-                    )
-                    Model.shared.addUser(user) {
-                        toast("נרשמת בהצלחה ✅")
-                        findNavController().popBackStack()
-                    }
+                    // 1. Create user in Firebase Auth
+                    firebaseAuth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(requireActivity()) { task ->
+                            if (task.isSuccessful) {
+                                val firebaseUser = firebaseAuth.currentUser
+                                if (firebaseUser == null) {
+                                    toast("שגיאה: משתמש לא נמצא אחרי הרשמה")
+                                    return@addOnCompleteListener
+                                }
+
+                                // 2. Create user object to save in Firestore
+                                val userMap = hashMapOf(
+                                    "id" to firebaseUser.uid,
+                                    "email" to email,
+                                    "fullName" to fullName,
+                                    "avatar" to null
+                                )
+
+                                // 3. Save user to Firestore
+                                firestore.collection("users").document(firebaseUser.uid)
+                                    .set(userMap)
+                                    .addOnSuccessListener {
+                                        // 4. Save user to local Room DB
+                                        val user = User(
+                                            id = firebaseUser.uid,
+                                            fullName = fullName,
+                                            email = email,
+                                            avatar = null
+                                        )
+                                        Model.shared.addUser(user) {
+                                            toast("נרשמת בהצלחה ✅")
+                                            findNavController().popBackStack()
+                                        }
+                                    }
+                                    .addOnFailureListener { e ->
+                                        firebaseUser.delete()
+                                        toast("שמירת פרטי משתמש נכשלה: ${e.message}")
+                                    }
+                            } else {
+                                toast("הרשמה נכשלה: ${task.exception?.message}")
+                            }
+                        }
                 }
             }
         }
