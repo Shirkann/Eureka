@@ -30,10 +30,14 @@ class Model private constructor() {
         }
     }
 
-    fun getUserById(id: String, completion: UserCompletion) {
+    fun getCurrentUser(completion: UserCompletion) {
         executor.execute {
-            val user = database.userDao.getUser(id)
-            mainHandler.post { completion(user) }
+            val user = database.userDao.getCurrentUser()
+            mainHandler.post {
+                if (user != null) {
+                    completion(user)
+                }
+            }
         }
     }
 
