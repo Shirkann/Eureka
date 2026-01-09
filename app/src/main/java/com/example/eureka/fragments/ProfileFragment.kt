@@ -1,4 +1,9 @@
 package com.example.eureka.fragments
 
-class ProfileFragment {
+import androidx.fragment.app.Fragment
+import com.example.eureka.R
+
+class ProfileFragment : Fragment(R.layout.fragment_profile)
+{
+
 }

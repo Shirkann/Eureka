@@ -10,4 +10,5 @@
     <string name="LoginDescription">התחברות</string>
     <string name="registertext">אין לכם משתמש עדיין? הרשמה</string>
     <string name="registerbuttontext">הרשמה</string>
+    <string name="PostCreateDescription">יצירת פוסט</string>
 </resources>

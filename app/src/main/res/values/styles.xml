@@ -22,12 +22,12 @@
     </style>
     <style name="SegmentedText.Selected">
         <item name="fontFamily">@font/notosanshebrew_semibold</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="SegmentedText.Unselected">
         <item name="fontFamily">@font/notosanshebrew_light</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
 
@@ -36,13 +36,13 @@
         <item name="cornerSize">50%</item>
     </style>
 
-    <style name="logintitle">
+    <style name="textinputlabel">
         <item name="fontFamily">@font/notosanshebrew_bold</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/main_font</item>
     </style>
 
-    <style name="loginhint">
+    <style name="textinputhint">
         <item name="fontFamily">@font/notosanshebrew_regular</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/log_hint</item>
