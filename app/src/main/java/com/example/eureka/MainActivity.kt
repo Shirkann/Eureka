@@ -13,6 +13,7 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 
 
 class MainActivity : AppCompatActivity() {
@@ -24,6 +25,23 @@ class MainActivity : AppCompatActivity() {
         Globals.appContext = applicationContext
         enableEdgeToEdge()
         setContentView(R.layout.skeleton)
+
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.f1_wrapper) as NavHostFragment
+        val navController = navHostFragment.navController
+        val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
+
+        // Check if user is logged in
+        val auth = FirebaseAuth.getInstance()
+        if (auth.currentUser != null) {
+            // If logged in, set start destination to home
+            navGraph.setStartDestination(R.id.homeFragment)
+        } else {
+            // If not logged in, set start destination to login
+            navGraph.setStartDestination(R.id.loginFragment)
+        }
+        navController.graph = navGraph
+
 
         val appBar = findViewById<AppBarLayout>(R.id.appbar)
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
@@ -42,10 +60,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         bottomNav.itemIconTintList = null
-
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.f1_wrapper) as NavHostFragment
-        val navController = navHostFragment.navController
 
         NavigationUI.setupWithNavController(bottomNav, navController)
 

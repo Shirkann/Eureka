@@ -29,39 +29,39 @@
         app:selectionRequired="true"
         app:checkedButton="@id/btn_lostCreate">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_foundCreate"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:text="מציאה"
-        android:textAllCaps="false"
-        android:textColor="@color/segmented_button_text"
-        app:backgroundTint="@color/segmented_button_bg"
-        app:cornerRadius="24dp"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:insetTop="0dp"
-        android:elevation="0dp"
-        android:stateListAnimator="@null"
-        android:insetBottom="0dp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_foundCreate"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="מציאה"
+            android:textAllCaps="false"
+            android:textColor="@color/segmented_button_text"
+            app:backgroundTint="@color/segmented_button_bg"
+            app:cornerRadius="24dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:insetTop="0dp"
+            android:elevation="0dp"
+            android:stateListAnimator="@null"
+            android:insetBottom="0dp" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_lostCreate"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:text="אבידה"
-        android:textAllCaps="false"
-        android:textColor="@color/segmented_button_text"
-        app:backgroundTint="@color/segmented_button_bg"
-        app:cornerRadius="24dp"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:insetTop="0dp"
-        android:elevation="0dp"
-        android:stateListAnimator="@null"
-        android:insetBottom="0dp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_lostCreate"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="אבידה"
+            android:textAllCaps="false"
+            android:textColor="@color/segmented_button_text"
+            app:backgroundTint="@color/segmented_button_bg"
+            app:cornerRadius="24dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:insetTop="0dp"
+            android:elevation="0dp"
+            android:stateListAnimator="@null"
+            android:insetBottom="0dp" />
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -113,16 +113,58 @@
             android:background="@drawable/bg_input_round"
             android:paddingHorizontal="16dp"
             android:inputType="none"
-            android:focusable="false"
+            android.focusable="false"
             android:cursorVisible="false"/>
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- מיקום -->
+    <TextView
+        style="@style/textinputlabel"
+        android:text="מיקום"
+        android:layout_marginTop="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/locationInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxBackgroundMode="outline"
+            android:hint="מאחזר מיקום..."
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/locationInput"
+                style="@style/textinputhint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="80dp"
+                android:gravity="top"
+                android:background="@drawable/bg_input_round"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp"
+                android:focusable="false"
+                android:cursorVisible="false"
+                android:inputType="textMultiLine"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ProgressBar
+            android:id="@+id/locationProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="visible"/>
+
+    </FrameLayout>
 
 
     <!-- יצירה -->
     <Button
-        style="@style/loginbutton"
+        style="@style/ActionButton"
         android:id="@+id/createButton"
         android:text="יצירה"
         android:layout_marginTop="32dp"
