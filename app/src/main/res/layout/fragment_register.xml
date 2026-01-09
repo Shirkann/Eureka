@@ -1,127 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:layout_marginHorizontal="32dp">
 
-    <TextView
-        style="@style/loginDescription"
-        android:text="@string/registerDescription"
+    <Button
+        android:id="@+id/backButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-    </TextView>
-    <TextView
-        style="@style/textinputlabel"
-        android:text="@string/email"
-        android:layout_width="match_parent"
-        android:layout_height="24dp"/>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layoutDirection="rtl"
-        android:textDirection="rtl"
-        android:textColorHint="@color/log_hint"
-        android:hint="@string/emailhint"
-        app:boxBackgroundMode="none">
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:text="חזור"
+        android:textColor="@color/black" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            style="@style/textinputhint"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/loginDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/registerDescription">
+
+        </TextView>
+
+        <TextView
+            style="@style/textinputlabel"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:text="@string/email" />
+
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:maxLines="1"
-            android:id="@+id/emailInput"
-            android:background="@drawable/bg_input_round"
-            android:backgroundTint="@null"
-            android:minHeight="42dp"
-            android:paddingTop="0dp"
-            android:paddingBottom="0dp"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-
-
-
-    <TextView
-        style="@style/textinputlabel"
-        android:text="@string/password"
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:layout_marginTop="22dp"/>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layoutDirection="rtl"
-        android:textDirection="rtl"
-        android:textColorHint="@color/log_hint"
-        android:hint="@string/passwordhint"
-        app:boxBackgroundMode="none">
-
-        <com.google.android.material.textfield.TextInputEditText
-            style="@style/textinputhint"
-            android:id="@+id/passwordInput"
-            android:singleLine="true"
-            android:maxLines="1"
+            android:hint="@string/emailhint"
+            android:layoutDirection="rtl"
             android:textColorHint="@color/log_hint"
-            android:background="@drawable/bg_input_round"
-            android:backgroundTint="@null"
+            android:textDirection="rtl"
+            app:boxBackgroundMode="none">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/emailInput"
+                style="@style/textinputhint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_input_round"
+                android:backgroundTint="@null"
+                android:maxLines="1"
+                android:minHeight="42dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
+                android:singleLine="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <TextView
+            style="@style/textinputlabel"
             android:layout_width="match_parent"
-            android:minHeight="42dp"
-            android:paddingTop="0dp"
-            android:paddingBottom="0dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="24dp"
+            android:layout_marginTop="22dp"
+            android:text="@string/password" />
 
-    </com.google.android.material.textfield.TextInputLayout>
-    <TextView
-        style="@style/textinputlabel"
-        android:text="@string/fullname"
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:layout_marginTop="22dp"/>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layoutDirection="rtl"
-        android:textDirection="rtl"
-        android:textColorHint="@color/log_hint"
-        android:hint="@string/fullnamehint"
-        app:boxBackgroundMode="none">
-
-        <com.google.android.material.textfield.TextInputEditText
-            style="@style/textinputhint"
-            android:id="@+id/fullnameInput"
-            android:singleLine="true"
-            android:maxLines="1"
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/passwordhint"
+            android:layoutDirection="rtl"
             android:textColorHint="@color/log_hint"
-            android:background="@drawable/bg_input_round"
-            android:backgroundTint="@null"
+            android:textDirection="rtl"
+            app:boxBackgroundMode="none">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/passwordInput"
+                style="@style/textinputhint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_input_round"
+                android:backgroundTint="@null"
+                android:maxLines="1"
+                android:minHeight="42dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
+                android:textColorHint="@color/log_hint" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            style="@style/textinputlabel"
             android:layout_width="match_parent"
-            android:minHeight="42dp"
-            android:paddingTop="0dp"
-            android:paddingBottom="0dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="24dp"
+            android:layout_marginTop="22dp"
+            android:text="@string/fullname" />
 
-    </com.google.android.material.textfield.TextInputLayout>
-    <Button
-        style="@style/loginbutton"
-        android:id="@+id/registerButton"
-        android:text="הרשמה"
-        app:cornerRadius="10dp"
-        android:stateListAnimator="@null"
-        android:layout_marginTop="32dp"
-        android:layout_width="275dp"
-        android:layout_height="52dp">>
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/fullnamehint"
+            android:layoutDirection="rtl"
+            android:textColorHint="@color/log_hint"
+            android:textDirection="rtl"
+            app:boxBackgroundMode="none">
 
-    </Button>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/fullnameInput"
+                style="@style/textinputhint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_input_round"
+                android:backgroundTint="@null"
+                android:maxLines="1"
+                android:minHeight="42dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
+                android:singleLine="true"
+                android:textColorHint="@color/log_hint" />
 
-</LinearLayout>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/registerButton"
+            style="@style/ActionButton"
+            android:layout_width="275dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="32dp"
+            android:stateListAnimator="@null"
+            android:text="הרשמה"
+            app:cornerRadius="10dp">>
+
+        </Button>
+
+    </LinearLayout>
+</RelativeLayout>

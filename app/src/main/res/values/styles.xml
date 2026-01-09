@@ -48,7 +48,7 @@
         <item name="android:textColor">@color/log_hint</item>
     </style>
 
-    <style name="loginbutton">
+    <style name="ActionButton">
         <item name="fontFamily">@font/notosanshebrew_semibold</item>
         <item name="android:textSize">15sp</item>
         <item name="android:textColor">@color/white</item>

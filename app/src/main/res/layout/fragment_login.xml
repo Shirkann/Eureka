@@ -78,7 +78,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        style="@style/loginbutton"
+        style="@style/ActionButton"
         android:id="@+id/loginButton"
         android:text="התחברות"
         app:cornerRadius="10dp"
