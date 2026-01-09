@@ -2,22 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_plus"
+        android:id="@+id/createPostFragment"
         android:icon="@drawable/plus_selector"
         android:title="יצירת פוסט" />
 
     <item
-        android:id="@+id/navigation_map"
+        android:id="@+id/mapFragment"
         android:icon="@drawable/map_selector"
         android:title="מפה"/>
 
     <item
-        android:id="@+id/navigation_profile"
+        android:id="@+id/profileFragment"
         android:icon="@drawable/profile_selector"
         android:title="פרופיל"/>
 
     <item
-        android:id="@+id/navigation_home"
+        android:id="@+id/homeFragment"
         android:icon="@drawable/home_selector"
         android:title="בית"/>
 

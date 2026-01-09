@@ -9,7 +9,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -60,8 +59,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         bottomNav.itemIconTintList = null
-
-        NavigationUI.setupWithNavController(bottomNav, navController)
 
         bottomNav.setupWithNavController(navController)
 
