@@ -29,7 +29,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.UUID
 
-class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
+class createPostFragment : Fragment(R.layout.fragment_createpost) {
 
     private var selectedPostType: PostType = PostType.LOST
     private var selectedItemCategory: ItemCategory? = null
