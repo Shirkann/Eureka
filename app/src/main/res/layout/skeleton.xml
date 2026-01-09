@@ -33,8 +33,7 @@
         </com.google.android.material.appbar.MaterialToolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
-
-    <!-- רקע מתחלף ל-Fragments (נשאר כמו אצלך) -->
+    
     <View
         android:id="@+id/fragment_bg"
         android:layout_width="match_parent"

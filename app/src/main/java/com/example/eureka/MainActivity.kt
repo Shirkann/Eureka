@@ -9,9 +9,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
+
 
 class MainActivity : AppCompatActivity() {
     object Globals {
@@ -41,15 +43,14 @@ class MainActivity : AppCompatActivity() {
 
         bottomNav.itemIconTintList = null
 
-        // NavController
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.f1_wrapper) as NavHostFragment
         val navController = navHostFragment.navController
 
-        // מחבר את ה-BottomNav לגרף
+        NavigationUI.setupWithNavController(bottomNav, navController)
+
         bottomNav.setupWithNavController(navController)
 
-        // מסתיר/מציג AppBar + BottomNav לפי המסך הנוכחי
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val hideBars = destination.id == R.id.loginFragment ||
                     destination.id == R.id.registerFragment

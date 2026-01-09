@@ -17,7 +17,7 @@
 
     </TextView>
     <TextView
-        style="@style/logintitle"
+        style="@style/textinputlabel"
         android:text="@string/email"
         android:layout_width="match_parent"
         android:layout_height="24dp"/>
@@ -32,7 +32,7 @@
         app:boxBackgroundMode="none">
 
         <com.google.android.material.textfield.TextInputEditText
-            style="@style/loginhint"
+            style="@style/textinputhint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
@@ -51,7 +51,7 @@
 
 
     <TextView
-        style="@style/logintitle"
+        style="@style/textinputlabel"
         android:text="@string/password"
         android:layout_width="match_parent"
         android:layout_height="24dp"
@@ -67,7 +67,7 @@
         app:boxBackgroundMode="none">
 
         <com.google.android.material.textfield.TextInputEditText
-            style="@style/loginhint"
+            style="@style/textinputhint"
             android:id="@+id/passwordInput"
             android:singleLine="true"
             android:maxLines="1"
@@ -82,7 +82,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
     <TextView
-        style="@style/logintitle"
+        style="@style/textinputlabel"
         android:text="@string/fullname"
         android:layout_width="match_parent"
         android:layout_height="24dp"
@@ -98,7 +98,7 @@
         app:boxBackgroundMode="none">
 
         <com.google.android.material.textfield.TextInputEditText
-            style="@style/loginhint"
+            style="@style/textinputhint"
             android:id="@+id/fullnameInput"
             android:singleLine="true"
             android:maxLines="1"
