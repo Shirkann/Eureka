@@ -10,62 +10,35 @@ import java.util.concurrent.Executors
 
 class Model private constructor() {
 
-    private val executor = Executors.newSingleThreadExecutor()
-    private val mainHandler = Handler.createAsync(Looper.getMainLooper())
-
-    private val database = AppLocalDB.db
-
-    // -------- Users --------
-    fun addUser(user: User, completion: Completion) {
-        executor.execute {
-            database.userDao.insertUser(user)
-            mainHandler.post { completion() }
-        }
-    }
-
-    fun deleteUser(user: User, completion: Completion = {}) {
-        executor.execute {
-            database.userDao.deleteUser(user)
-            mainHandler.post { completion() }
-        }
-    }
-
-    fun getCurrentUser(completion: UserCompletion) {
-        executor.execute {
-            val user = database.userDao.getCurrentUser()
-            mainHandler.post {
-                if (user != null) {
-                    completion(user)
-                }
-            }
-        }
-    }
-
-
-
-    // -------- Posts --------
-    fun addPost(post: Post, completion: Completion) {
-        executor.execute {
-            database.postDao.insert(post)
-            mainHandler.post { completion() }
-        }
-    }
-
-    fun getPostsByUser(userId: String, completion: PostsCompletion) {
-        executor.execute {
-            val posts = database.postDao.getPostsByUser(userId)
-            mainHandler.post { completion(posts) }
-        }
-    }
-
-    fun getPostsByType(type: PostType, limit: Int, completion: PostsCompletion) {
-        executor.execute {
-            val posts = database.postDao.getPostsByType(limit, type)
-            mainHandler.post { completion(posts) }
-        }
-    }
+    private val firebaseModel = FireBaseModel()
+    private val firebaseAuth = FirebaseAuthModel()
 
     companion object {
-        val shared: Model by lazy { Model() }
+        val shared = Model()
+    }
+
+    fun addPost(post: Post, completion: Completion)
+    {
+        firebaseModel.addPost(post, completion)
+    }
+
+    fun getPostsByUser(userId: String, completion: PostsCompletion)
+    {
+        firebaseModel.getPostsByUser(userId, completion)
+    }
+
+    fun getPostsByType(type: PostType, limit: Int, completion: PostsCompletion)
+    {
+        firebaseModel.getPostsByType(type, limit, completion)
+    }
+
+    fun deletePost(post: Post)
+    {
+        firebaseModel.deletePost(post)
+    }
+
+    fun getPostById(id: String, completion: PostsCompletion)
+    {
+        firebaseModel.getPostById(id, completion)
     }
 }
