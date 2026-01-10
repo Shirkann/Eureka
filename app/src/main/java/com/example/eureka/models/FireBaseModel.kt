@@ -42,15 +42,15 @@ class FireBaseModel {
     }
 
 
-    fun addPost(post: Post, completion: Completion) {
+    fun addPost(post: Post, completion: (Boolean) -> Unit) {
         db.collection(POSTS)
             .document(post.id)
             .set(post.toJson)
-            .addOnSuccessListener { documentReference ->
-                completion()
+            .addOnSuccessListener {
+                completion(true)
             }
-            .addOnFailureListener { e ->
-                completion()
+            .addOnFailureListener {
+                completion(false)
             }
 
     }

@@ -14,6 +14,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
+import com.example.eureka.models.FireBaseModel
+import com.example.eureka.models.FirebaseManager
 import com.example.eureka.models.ItemCategory
 import com.example.eureka.models.Post
 import com.example.eureka.models.PostType
@@ -25,8 +27,6 @@ import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
@@ -49,6 +49,9 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
     private var selectedItemCategory: ItemCategory? = null
     private var selectedLatitude: Double? = null
     private var selectedLongitude: Double? = null
+
+    // Model
+    private val fireBaseModel = FireBaseModel()
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -130,7 +133,7 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
     }
 
     private fun createPost() {
-        val user = FirebaseAuth.getInstance().currentUser
+        val user = FirebaseManager.auth.currentUser
         val description = descriptionInput.text.toString()
 
         if (user == null) {
@@ -156,14 +159,13 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
             imageLocalPath = null
         )
 
-        FirebaseFirestore.getInstance().collection("posts")
-            .add(newPost)
-            .addOnSuccessListener {
+        fireBaseModel.addPost(newPost) { isSuccess ->
+            if (isSuccess) {
                 findNavController().navigate(R.id.action_createPost_to_home)
+            } else {
+                Toast.makeText(requireContext(), "Failed to create post", Toast.LENGTH_SHORT).show()
             }
-            .addOnFailureListener {
-                Toast.makeText(requireContext(), "Failed to create post: ${it.message}", Toast.LENGTH_SHORT).show()
-            }
+        }
     }
 
 

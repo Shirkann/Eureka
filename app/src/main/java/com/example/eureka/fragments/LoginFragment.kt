@@ -1,3 +1,4 @@
+
 package com.example.eureka.fragments
 
 import android.graphics.Color
@@ -14,18 +15,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
-import com.example.eureka.models.Model
+import com.example.eureka.models.FirebaseManager
 import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.auth.FirebaseAuth
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
-    private lateinit var firebaseAuth: FirebaseAuth
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        firebaseAuth = FirebaseAuth.getInstance()
 
         val editTextEmail = view.findViewById<TextInputEditText>(R.id.emailInput)
         val editTextPassword = view.findViewById<TextInputEditText>(R.id.passwordInput)
@@ -71,7 +67,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 return@setOnClickListener
             }
 
-            firebaseAuth.signInWithEmailAndPassword(email, password)
+            FirebaseManager.auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
                         toast("התחברת בהצלחה ✅")
