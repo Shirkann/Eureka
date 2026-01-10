@@ -60,5 +60,15 @@
         <item name="android:textColor">@color/main_font</item>
     </style>
 
+    <style name="BackButtonText" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/blue</item>
+        <item name="fontFamily">@font/notosanshebrew_medium</item>
+        <item name="android:textSize">16sp</item>
+
+        <!-- ביטול מוחלט של רקע -->
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
+
 
 </resources>
