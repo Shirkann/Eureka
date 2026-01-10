@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginHorizontal="32dp">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/backButton"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_marginTop="55dp"
+        style="@style/BackButtonText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:text="חזור"
-        android:textColor="@color/black" />
+        android:layout_alignParentTop="true"
+        android:text="חזרה להתחברות"
+        android:layoutDirection="rtl"
+        app:icon="@drawable/back_arrow"
+        app:iconTint="@color/blue"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp"
+        app:iconSize="18dp" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
