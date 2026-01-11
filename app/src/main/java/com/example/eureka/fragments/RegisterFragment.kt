@@ -7,21 +7,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
-<<<<<<< Updated upstream
-import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-=======
 import com.example.eureka.models.FirebaseAuthModel
 import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
-import com.google.firebase.firestore.firestore
->>>>>>> Stashed changes
 
 class RegisterFragment : Fragment(R.layout.fragment_register) {
-
-    private val authModel = FirebaseAuthModel()
+    private val authModel = FirebaseAuthModel.shared
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -33,69 +23,33 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         val fullnameInput = view.findViewById<TextInputEditText>(R.id.fullnameInput)
 
         registerButton.setOnClickListener {
-            val email = emailInput.text.toString().trim()
-            val password = passwordInput.text.toString().trim()
-            val fullname = fullnameInput.text.toString().trim()
+            val email = emailInput.text?.toString()?.trim().orEmpty()
+            val password = passwordInput.text?.toString()?.trim().orEmpty()
+            val fullname = fullnameInput.text?.toString()?.trim().orEmpty()
 
-<<<<<<< Updated upstream
-            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        val user = FirebaseAuth.getInstance().currentUser
-                        val db = FirebaseFirestore.getInstance()
-                        val userMap = hashMapOf(
-                            "fullname" to fullname
-                        )
-                        if (user != null) {
-                            db.collection("users").document(user.uid)
-                                .set(userMap)
-                                .addOnSuccessListener {
-                                    findNavController().navigate(R.id.action_register_to_home)
-                                }
-                        }
-
-=======
-            if (email.isEmpty() || password.isEmpty() || fullname.isEmpty()) {
-                Toast.makeText(requireContext(), "נא למלא את כל השדות", Toast.LENGTH_SHORT).show()
+            if (email.isBlank() || password.isBlank() || fullname.isBlank()) {
+                toast("נא למלא את כל השדות")
                 return@setOnClickListener
             }
 
-            authModel.createUser(email, password) { success: Boolean ->
+            authModel.createUser(email, password, fullname) { success ->
                 if (success) {
-                    val user = Firebase.auth.currentUser
-
-                    user?.let {
-                        val userMap = hashMapOf(
-                            "fullname" to fullname,
-                            "email" to email
-                        )
-
-                        Firebase.firestore
-                            .collection("users")
-                            .document(it.uid)
-                            .set(userMap)
-                            .addOnSuccessListener {
-                                Toast.makeText(requireContext(), "נרשמת בהצלחה 🎉", Toast.LENGTH_SHORT).show()
-                                findNavController()
-                                    .navigate(R.id.action_register_to_home)
-                            }
-                            .addOnFailureListener {
-                                Toast.makeText(requireContext(), "שגיאה בשמירת משתמש", Toast.LENGTH_SHORT).show()
-                            }
->>>>>>> Stashed changes
-                    }
+                    toast("נרשמת בהצלחה 🎉")
+                    findNavController()
+                        .navigate(R.id.action_register_to_home)
                 } else {
-                    Toast.makeText(requireContext(), "הרשמה נכשלה ❌", Toast.LENGTH_SHORT).show()
+                    toast("הרשמה נכשלה ❌")
                 }
-<<<<<<< Updated upstream
-
-=======
             }
->>>>>>> Stashed changes
         }
 
         backButton.setOnClickListener {
-            findNavController().navigate(R.id.action_register_to_login)
+            findNavController()
+                .navigate(R.id.action_register_to_login)
         }
+    }
+
+    private fun toast(msg: String) {
+        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 }

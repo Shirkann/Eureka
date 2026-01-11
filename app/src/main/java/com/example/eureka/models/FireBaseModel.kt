@@ -7,14 +7,21 @@ import com.example.eureka.base.Completion
 import com.example.eureka.base.UserCompletion
 import com.example.eureka.base.BooleanCompletion
 import com.example.eureka.base.PostsCompletion
+import com.google.firebase.auth.auth
 
 class FireBaseModel {
 
     private val db = Firebase.firestore
+    private val auth = Firebase.auth
 
-    private companion object COLLECTIONS {
+    companion object COLLECTIONS {
         const val POSTS = "Posts"
+        const val USERS = "users"
     }
+
+
+
+
 
 
 
@@ -44,19 +51,16 @@ class FireBaseModel {
     }
 
 
-<<<<<<< Updated upstream
-    fun addPost(post: Post, completion: Completion) {
-=======
+
     fun addPost(post: Post, completion: BooleanCompletion) {
->>>>>>> Stashed changes
-        db.collection(POSTS)
+            db.collection(POSTS)
             .document(post.id)
-            .set(post.toJson)
+            .set(post.toJson())
             .addOnSuccessListener { documentReference ->
-                completion()
+                completion(true)
             }
             .addOnFailureListener { e ->
-                completion()
+                completion(false)
             }
     }
 

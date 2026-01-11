@@ -44,19 +44,20 @@ data class Post(
         }
     }
 
-    val toJson: Map<String, Any?>
-        get() = hashMapOf(
+    fun toJson(): Map<String, Any?> {
+        return hashMapOf(
             "id" to id,
             "ownerId" to ownerId,
             "createdAt" to createdAt,
-            "type" to type,
+            "type" to type?.name,
             "latitude" to latitude,
             "longitude" to longitude,
             "text" to text,
-            "category" to category,
+            "category" to category.name,
             "imageRemoteUrl" to imageRemoteUrl,
             "imageLocalPath" to imageLocalPath
         )
+    }
 
 
 

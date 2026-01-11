@@ -12,7 +12,6 @@ import java.util.concurrent.Executors
 class Model private constructor() {
 
     private val firebaseModel = FireBaseModel()
-    private val firebaseAuth = FirebaseAuthModel()
 
     companion object {
         val shared = Model()
