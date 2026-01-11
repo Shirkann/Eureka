@@ -14,6 +14,11 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
+<<<<<<< Updated upstream
+=======
+import com.example.eureka.models.FireBaseModel
+import com.google.firebase.auth.auth
+>>>>>>> Stashed changes
 import com.example.eureka.models.ItemCategory
 import com.example.eureka.models.Post
 import com.example.eureka.models.PostType
@@ -25,8 +30,12 @@ import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+<<<<<<< Updated upstream
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+=======
+import com.google.firebase.Firebase
+>>>>>>> Stashed changes
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
@@ -130,7 +139,11 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
     }
 
     private fun createPost() {
+<<<<<<< Updated upstream
         val user = FirebaseAuth.getInstance().currentUser
+=======
+        val user = Firebase.auth.currentUser
+>>>>>>> Stashed changes
         val description = descriptionInput.text.toString()
 
         if (user == null) {

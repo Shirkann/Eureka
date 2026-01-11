@@ -5,6 +5,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.example.eureka.base.Completion
 import com.example.eureka.base.UserCompletion
+import com.example.eureka.base.BooleanCompletion
 import com.example.eureka.base.PostsCompletion
 
 class FireBaseModel {
@@ -16,9 +17,10 @@ class FireBaseModel {
     }
 
 
+
     fun getPostsByUser(userId: String, completion: PostsCompletion) {
         db.collection(POSTS)
-            .whereEqualTo("userId", userId)
+            .whereEqualTo("ownerId", userId)
             .get()
             .addOnCompleteListener { result ->
                 when (result.isSuccessful) {
@@ -42,7 +44,11 @@ class FireBaseModel {
     }
 
 
+<<<<<<< Updated upstream
     fun addPost(post: Post, completion: Completion) {
+=======
+    fun addPost(post: Post, completion: BooleanCompletion) {
+>>>>>>> Stashed changes
         db.collection(POSTS)
             .document(post.id)
             .set(post.toJson)
@@ -52,7 +58,6 @@ class FireBaseModel {
             .addOnFailureListener { e ->
                 completion()
             }
-
     }
 
     fun deletePost(post: Post) {
