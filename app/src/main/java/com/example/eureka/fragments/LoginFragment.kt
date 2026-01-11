@@ -28,7 +28,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         val loginButton = view.findViewById<Button>(R.id.loginButton)
         val registerButton = view.findViewById<TextView>(R.id.RegisterButton)
 
-        // Clickable "Register" text
+
         val fullText = getString(R.string.registertext)
         val clickableWord = getString(R.string.registerbuttontext)
 
@@ -50,7 +50,12 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         }
 
         if (start >= 0) {
-            spannable.setSpan(clickableSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            spannable.setSpan(
+                clickableSpan,
+                start,
+                end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
         }
 
         registerButton.text = spannable
@@ -76,6 +81,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                         toast("שם משתמש או סיסמה לא נכונים")
                     }
                 }
+            }
         }
     }
 

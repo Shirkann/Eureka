@@ -5,19 +5,19 @@ import android.os.Looper
 import com.example.eureka.base.Completion
 import com.example.eureka.base.UserCompletion
 import com.example.eureka.base.PostsCompletion
+import com.example.eureka.base.BooleanCompletion
 import com.example.eureka.dao.AppLocalDB
 import java.util.concurrent.Executors
 
 class Model private constructor() {
 
     private val firebaseModel = FireBaseModel()
-    private val firebaseAuth = FirebaseAuthModel()
 
     companion object {
         val shared = Model()
     }
 
-    fun addPost(post: Post, completion: Completion)
+    fun addPost(post: Post, completion: BooleanCompletion)
     {
         firebaseModel.addPost(post, completion)
     }

@@ -1,38 +1,74 @@
 package com.example.eureka.models
 
-import android.util.Log
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
-import com.example.eureka.base.Completion
+import com.google.firebase.firestore.firestore
 
-class FirebaseAuthModel {
-    private var auth: FirebaseAuth = Firebase.auth
+class FirebaseAuthModel private constructor() {
 
-    fun signIn(email: String, password: String, completion: Completion) {
-        if (auth.currentUser != null) { completion(); return }
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                completion()
+    private val auth = Firebase.auth
+    private val db = Firebase.firestore
+
+    companion object {
+        val shared = FirebaseAuthModel()
+        const val USERS = "users"
+    }
+
+
+    fun createUser(
+        email: String,
+        password: String,
+        fullname: String,
+        completion: (Boolean) -> Unit
+    ) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnSuccessListener {
+                val user = auth.currentUser
+                if (user == null) {
+                    completion(false)
+                    return@addOnSuccessListener
+                }
+
+                val userMap = hashMapOf(
+                    "id" to user.uid,
+                    "fullname" to fullname,
+                    "email" to email
+                )
+
+                db.collection(USERS)
+                    .document(user.uid)
+                    .set(userMap)
+                    .addOnSuccessListener { completion(true) }
+                    .addOnFailureListener { completion(false) }
             }
             .addOnFailureListener {
-                Log.i("TAG", "signIn: failed ${it.message}")
+                completion(false)
             }
     }
+
+
+    fun signIn(
+        email: String,
+        password: String,
+        completion: (Boolean) -> Unit
+    ) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnSuccessListener { completion(true) }
+            .addOnFailureListener { completion(false) }
+    }
+
 
     fun signOut() {
         auth.signOut()
     }
 
-    fun createUser(email: String, password: String, completion: Completion) {
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                completion()
-            }
-            .addOnFailureListener {
-                Log.i("TAG", "createUser: failed ${it.message}")
-            }
+
+    fun getCurrentUser(): FirebaseUser? {
+        return auth.currentUser
     }
 
-
+    fun isUserLoggedIn(): Boolean {
+        return auth.currentUser != null
+    }
 }

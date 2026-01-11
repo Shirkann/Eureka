@@ -5,20 +5,29 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.example.eureka.base.Completion
 import com.example.eureka.base.UserCompletion
+import com.example.eureka.base.BooleanCompletion
 import com.example.eureka.base.PostsCompletion
+import com.google.firebase.auth.auth
 
 class FireBaseModel {
 
     private val db = Firebase.firestore
+    private val auth = Firebase.auth
 
-    private companion object COLLECTIONS {
+    companion object COLLECTIONS {
         const val POSTS = "Posts"
+        const val USERS = "users"
     }
+
+
+
+
+
 
 
     fun getPostsByUser(userId: String, completion: PostsCompletion) {
         db.collection(POSTS)
-            .whereEqualTo("userId", userId)
+            .whereEqualTo("ownerId", userId)
             .get()
             .addOnCompleteListener { result ->
                 when (result.isSuccessful) {
@@ -52,7 +61,6 @@ class FireBaseModel {
             .addOnFailureListener {
                 completion(false)
             }
-
     }
 
     fun deletePost(post: Post) {

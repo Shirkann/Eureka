@@ -4,6 +4,7 @@ package com.example.eureka.fragments
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
@@ -11,6 +12,7 @@ import com.example.eureka.models.FirebaseManager
 import com.google.android.material.textfield.TextInputEditText
 
 class RegisterFragment : Fragment(R.layout.fragment_register) {
+    private val authModel = FirebaseAuthModel.shared
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,7 +45,8 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         }
 
         backButton.setOnClickListener {
-            findNavController().navigate(R.id.action_register_to_login)
+            findNavController()
+                .navigate(R.id.action_register_to_login)
         }
     }
 }

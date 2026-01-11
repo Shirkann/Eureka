@@ -6,3 +6,5 @@ import com.example.eureka.models.Post
 typealias UserCompletion = (User?) -> Unit
 typealias Completion = () -> Unit
 typealias PostsCompletion = (List<Post>) -> Unit
+typealias BooleanCompletion = (Boolean) -> Unit
+

@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.os.Bundle
 import android.view.View
+import com.google.firebase.firestore.FirebaseFirestore
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Toast
@@ -137,7 +138,7 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
         val description = descriptionInput.text.toString()
 
         if (user == null) {
-            Toast.makeText(requireContext(), "You must be logged in to create a post", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "You must be logged in", Toast.LENGTH_SHORT).show()
             return
         }
 
