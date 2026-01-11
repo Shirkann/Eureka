@@ -2,6 +2,7 @@ package com.example.eureka.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+
 @Entity
 data class Post(
     @PrimaryKey val id: String,
@@ -14,20 +15,21 @@ data class Post(
     val category: ItemCategory,
     val imageRemoteUrl: String?,
     val imageLocalPath: String?
-){
+) {
     companion object {
-
         fun fromJson(json: Map<String, Any?>): Post {
-            val id = json["id"] as String
-            val ownerId = json["ownerId"] as String
-            val createdAt = json["createdAt"] as Long
-            val type = json["type"] as PostType?
-            val latitude = json["latitude"] as Double?
-            val longitude = json["longitude"] as Double?
-            val text =  json["text"] as String
-            val category = json["category"] as ItemCategory
-            val imageRemoteUrl = json["imageRemoteUrl"] as String?
-            val imageLocalPath = json["imageLocalPath"] as String
+            val id = json["id"] as? String ?: ""
+            val ownerId = json["ownerId"] as? String ?: ""
+            val createdAt = json["createdAt"] as? Long ?: 0L
+            val typeString = json["type"] as? String
+            val type = typeString?.let { PostType.valueOf(it) }
+            val latitude = json["latitude"] as? Double
+            val longitude = json["longitude"] as? Double
+            val text = json["text"] as? String ?: ""
+            val categoryString = json["category"] as? String
+            val category = categoryString?.let { ItemCategory.valueOf(it) } ?: ItemCategory.OTHER
+            val imageRemoteUrl = json["imageRemoteUrl"] as? String
+            val imageLocalPath = json["imageLocalPath"] as? String
 
             return Post(
                 id = id,
@@ -57,10 +59,4 @@ data class Post(
             "imageRemoteUrl" to imageRemoteUrl,
             "imageLocalPath" to imageLocalPath
         )
-    }
-
-
-
-
-
 }
