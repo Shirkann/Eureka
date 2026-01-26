@@ -1,7 +1,11 @@
 package com.example.eureka.models
 
+import android.content.Context
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.eureka.MyApplication
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldValue
 
 @Entity
 data class Post(
@@ -14,22 +18,51 @@ data class Post(
     val text: String,
     val category: ItemCategory,
     val imageRemoteUrl: String?,
-    val imageLocalPath: String?
-) {
+    val imageLocalPath: String?,
+    var lastUpdated: Long?
+){
     companion object {
+
+        var LastUpdated: Long
+            get() { return MyApplication.appContext
+                ?.getSharedPreferences("TAG", Context.MODE_PRIVATE)
+                ?.getLong(LAST_UPDATED_KEY, 0) ?:0 }
+
+            set(value) {
+                MyApplication.appContext
+                    ?.getSharedPreferences("TAG", Context.MODE_PRIVATE)
+                    ?.edit()
+                    ?.putLong(LAST_UPDATED_KEY, value)
+                    ?.apply()
+            }
+
+
+
+        const val ID_KEY = "id"
+        const val OWNER_ID_KEY = "ownerId"
+        const val CREATED_AT_KEY = "createdAt"
+        const val TYPE_KEY = "type"
+        const val LATITUDE_KEY = "latitude"
+        const val LONGITUDE_KEY = "longitude"
+        const val TEXT_KEY = "text"
+        const val CATEGORY_KEY = "category"
+        const val IMAGE_REMOTE_URL_KEY = "imageRemoteUrl"
+        const val IMAGE_LOCAL_PATH_KEY = "imageLocalPath"
+        const val LAST_UPDATED_KEY = "lastUpdated"
+
         fun fromJson(json: Map<String, Any?>): Post {
-            val id = json["id"] as? String ?: ""
-            val ownerId = json["ownerId"] as? String ?: ""
-            val createdAt = json["createdAt"] as? Long ?: 0L
-            val typeString = json["type"] as? String
-            val type = typeString?.let { PostType.valueOf(it) }
-            val latitude = json["latitude"] as? Double
-            val longitude = json["longitude"] as? Double
-            val text = json["text"] as? String ?: ""
-            val categoryString = json["category"] as? String
-            val category = categoryString?.let { ItemCategory.valueOf(it) } ?: ItemCategory.OTHER
-            val imageRemoteUrl = json["imageRemoteUrl"] as? String
-            val imageLocalPath = json["imageLocalPath"] as? String
+            val id = json[ID_KEY] as String
+            val ownerId = json[OWNER_ID_KEY] as String
+            val createdAt = json[CREATED_AT_KEY] as Long
+            val type = json[TYPE_KEY] as PostType?
+            val latitude = json[LATITUDE_KEY] as Double?
+            val longitude = json[LONGITUDE_KEY] as Double?
+            val text =  json[TEXT_KEY] as String
+            val category = json[CATEGORY_KEY] as ItemCategory
+            val imageRemoteUrl = json[IMAGE_REMOTE_URL_KEY] as String?
+            val imageLocalPath = json[IMAGE_LOCAL_PATH_KEY] as String
+            val timestamp = json[LAST_UPDATED_KEY] as? Timestamp
+            val lastUpdatedLong = timestamp?.toDate()?.time
 
             return Post(
                 id = id,
@@ -41,22 +74,31 @@ data class Post(
                 text = text,
                 category = category,
                 imageRemoteUrl = imageRemoteUrl,
-                imageLocalPath = imageLocalPath
+                imageLocalPath = imageLocalPath,
+                lastUpdated = lastUpdatedLong
             )
         }
     }
 
     fun toJson(): Map<String, Any?> {
         return hashMapOf(
-            "id" to id,
-            "ownerId" to ownerId,
-            "createdAt" to createdAt,
-            "type" to type?.name,
-            "latitude" to latitude,
-            "longitude" to longitude,
-            "text" to text,
-            "category" to category.name,
-            "imageRemoteUrl" to imageRemoteUrl,
-            "imageLocalPath" to imageLocalPath
+            ID_KEY to id,
+            OWNER_ID_KEY to ownerId,
+            CREATED_AT_KEY to createdAt,
+            TYPE_KEY to type?.name,
+            LATITUDE_KEY to latitude,
+            LONGITUDE_KEY to longitude,
+            TEXT_KEY to text,
+            CATEGORY_KEY to category.name,
+            IMAGE_REMOTE_URL_KEY to imageRemoteUrl,
+            IMAGE_LOCAL_PATH_KEY to imageLocalPath,
+            LAST_UPDATED_KEY to FieldValue.serverTimestamp()
         )
+
+    }
+
+
+
+
+
 }
