@@ -1,12 +1,11 @@
 package com.example.eureka.models
 
-import android.util.Log
+
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
-import com.example.eureka.base.Completion
-import com.example.eureka.base.UserCompletion
 import com.example.eureka.base.BooleanCompletion
 import com.example.eureka.base.PostsCompletion
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.auth
 
 class FireBaseModel {
@@ -21,12 +20,10 @@ class FireBaseModel {
 
 
 
+    fun getPostsByUser(since:Long, userId: String, completion: PostsCompletion) {
 
-
-
-
-    fun getPostsByUser(userId: String, completion: PostsCompletion) {
         db.collection(POSTS)
+            .whereGreaterThanOrEqualTo(Post.LAST_UPDATED_KEY, Timestamp(since/1000,0))
             .whereEqualTo("ownerId", userId)
             .get()
             .addOnCompleteListener { result ->

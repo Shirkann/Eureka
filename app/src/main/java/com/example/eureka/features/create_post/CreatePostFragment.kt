@@ -1,11 +1,10 @@
-package com.example.eureka.fragments
+package com.example.eureka.features.create_post
 
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.os.Bundle
 import android.view.View
-import com.google.firebase.firestore.FirebaseFirestore
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Toast
@@ -15,9 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
-import com.example.eureka.dao.AppLocalDB.db
 import com.example.eureka.models.FireBaseModel
-import com.google.firebase.auth.auth
 import com.example.eureka.models.ItemCategory
 import com.example.eureka.models.Post
 import com.example.eureka.models.PostType
@@ -30,6 +27,7 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
@@ -116,7 +114,8 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
             ItemCategory.OTHER to "אחר"
         )
         val itemTypeNames = itemCategoryMap.values.toList()
-        val itemTypeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, itemTypeNames)
+        val itemTypeAdapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, itemTypeNames)
 
         itemTypeInput.setAdapter(itemTypeAdapter)
         itemTypeInput.setOnItemClickListener { parent, _, position, _ ->
@@ -156,7 +155,8 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
             text = description,
             category = selectedItemCategory!!,
             imageRemoteUrl = null,
-            imageLocalPath = null
+            imageLocalPath = null,
+            lastUpdated = null
         )
 
             FireBaseModel().addPost(newPost) { success ->

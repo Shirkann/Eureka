@@ -1,16 +1,19 @@
-package com.example.eureka.fragments
+package com.example.eureka.features.post_list
 
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.example.eureka.R
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 
 class HomeFragment : Fragment(R.layout.fragment_home)
 {
+
+    private val viewModel: PostsListViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
@@ -27,7 +30,8 @@ class HomeFragment : Fragment(R.layout.fragment_home)
 
         fun showText(text: String) {
             content.removeAllViews()
-            content.addView(TextView(requireContext()).apply
+            content.addView(
+                TextView(requireContext()).apply
             {
                 this.text = text
                 textSize = 18f
