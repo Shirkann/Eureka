@@ -11,58 +11,35 @@ import java.util.concurrent.Executors
 
 class PostsRepository private constructor() {
 
-
-    private val executor = Executors.newSingleThreadExecutor()
-    private val mainHandler = Handler.createAsync(Looper.getMainLooper())
-    private val database: AppLocalDbRepository = AppLocalDB.db
     private val firebaseModel = FireBaseModel()
+    private val database = AppLocalDB.db
+    private val executor = Executors.newSingleThreadExecutor()
 
     companion object {
         val shared = PostsRepository()
+        private const val POSTS_LIMIT = 50
     }
 
-    fun addPost(post: Post, completion: BooleanCompletion)
-    {
-        firebaseModel.addPost(post, completion)
+    fun getPostsByType(type: PostType): LiveData<MutableList<Post>> {
+        return database.postDao.getPostsByType(type.name, POSTS_LIMIT)
     }
 
-    fun getPostsByUser(userId: String, completion: PostsCompletion)
-    {
+
+    fun refreshPostsByType(type: PostType) {
         val lastUpdated = Post.LastUpdated
 
-        firebaseModel.getPostsByUser(lastUpdated, userId) {
+        firebaseModel.getPostsByType(lastUpdated, type, POSTS_LIMIT) { posts ->
             executor.execute {
                 var time = lastUpdated
-                for (post in it) {
+                for (post in posts) {
                     database.postDao.insert(post)
-                    post.lastUpdated?.let { postLastUpdated ->
-                        if (time < postLastUpdated) {
-                            time = postLastUpdated
-                        }
+                    post.lastUpdated?.let {
+                        if (time < it) time = it
                     }
-                    post.lastUpdated = time
-                    val posts = database.postDao.getPostsByUser(userId)
-                    mainHandler.post { completion(posts)}
                 }
-
+                Post.LastUpdated = time
             }
-
         }
-
-    }
-
-    fun getPostsByType(type: PostType, limit: Int, completion: PostsCompletion)
-    {
-        firebaseModel.getPostsByType(type, limit, completion)
-    }
-
-    fun deletePost(post: Post)
-    {
-        firebaseModel.deletePost(post)
-    }
-
-    fun getPostById(id: String, completion: PostsCompletion)
-    {
-        firebaseModel.getPostById(id, completion)
     }
 }
+
