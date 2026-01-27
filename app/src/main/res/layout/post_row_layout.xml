@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <!-- כותרת -->
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#000"
+            tools:text="כומתת נחל עם כיתוב"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- תאריך -->
+        <TextView
+            android:id="@+id/dateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#777"
+            tools:text="19.12.2025 | 12:23"
+            app:layout_constraintTop_toBottomOf="@id/titleText"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <!-- מיקום -->
+        <TextView
+            android:id="@+id/subTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#4F7CFF"
+            android:textSize="13sp"
+            tools:text="תחנה מרכזית ירושלים"
+            app:layout_constraintTop_toBottomOf="@id/titleText"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- מלל -->
+        <TextView
+            android:id="@+id/bodyText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="14sp"
+            android:textColor="#333"
+            tools:text="נמצאה כומתת נחל עם כיתוב פנימי, נמצאה באזור התחנה המרכזית. מי שמזהה מוזמן לפנות."
+            app:layout_constraintTop_toBottomOf="@id/dateText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- תמונה -->
+        <ImageView
+            android:id="@+id/itemImage"
+            android:layout_width="0dp"
+            android:layout_height="220dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/sample_image"
+            app:layout_constraintTop_toBottomOf="@id/bodyText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- פורסם-->
+        <TextView
+            android:id="@+id/descriptionText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="13sp"
+            android:textColor="#444"
+            tools:text="פורסם על ידי: שירן לוי"
+            app:layout_constraintTop_toBottomOf="@id/itemImage"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- TAG -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/detailsTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#4F7CFF"
+            tools:text="פרטי לבוש"
+            app:chipBackgroundColor="#EAEAFF"
+            app:chipCornerRadius="16dp"
+            app:chipMinHeight="28dp"
+            app:layout_constraintTop_toBottomOf="@id/descriptionText"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

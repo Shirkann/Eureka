@@ -1,5 +1,6 @@
 package com.example.eureka.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -16,19 +17,17 @@ interface PostDao {
     @Query("""
         SELECT * FROM Post
         WHERE ownerId = :userId
-        ORDER BY createdAt DESC """)
-    fun getPostsByUser(userId: String): List<Post>
+        ORDER BY createdAt DESC""")
+    fun getPostsByUser(userId: String): LiveData<MutableList<Post>>
 
     @Query("""
         SELECT * FROM Post
         WHERE type = :type
         ORDER BY createdAt DESC
         LIMIT :limit""")
-    fun getPostsByType(limit: Int,type: PostType): List<Post>
-
-
-
+    fun getPostsByType(type: String, limit: Int): LiveData<MutableList<Post>>
 
     @Query("DELETE FROM Post")
     fun clearAll()
 }
+

@@ -15,7 +15,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
-import com.example.eureka.models.FirebaseManager
+import com.example.eureka.models.FirebaseAuthModel
 import com.google.android.material.textfield.TextInputEditText
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
@@ -72,16 +72,15 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 return@setOnClickListener
             }
 
-            FirebaseManager.auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(requireActivity()) { task ->
-                    if (task.isSuccessful) {
-                        toast("התחברת בהצלחה ✅")
-                        findNavController().navigate(R.id.action_login_to_home)
-                    } else {
-                        toast("שם משתמש או סיסמה לא נכונים")
-                    }
+            FirebaseAuthModel.shared.signIn(email, password) { success ->
+                if (success) {
+                    toast("התחברת בהצלחה ✅")
+                    findNavController().navigate(R.id.action_login_to_home)
+                } else {
+                    toast("שם משתמש או סיסמה לא נכונים")
                 }
             }
+
         }
     }
 

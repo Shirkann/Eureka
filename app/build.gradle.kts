@@ -31,6 +31,11 @@ android {
             )
         }
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -52,6 +57,7 @@ dependencies {
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
+    implementation(libs.picasso)
     implementation(platform(libs.firebase.bom))
     implementation(libs.google.firebase.auth)
     implementation(libs.firebase.firestore)

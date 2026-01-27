@@ -15,7 +15,7 @@ data class Post(
     val type: PostType?,
     val latitude: Double?,
     val longitude: Double?,
-    val text: String,
+    val text: String?,
     val category: ItemCategory,
     val imageRemoteUrl: String?,
     val imageLocalPath: String?,
@@ -54,13 +54,16 @@ data class Post(
             val id = json[ID_KEY] as String
             val ownerId = json[OWNER_ID_KEY] as String
             val createdAt = json[CREATED_AT_KEY] as Long
-            val type = json[TYPE_KEY] as PostType?
-            val latitude = json[LATITUDE_KEY] as Double?
-            val longitude = json[LONGITUDE_KEY] as Double?
-            val text =  json[TEXT_KEY] as String
-            val category = json[CATEGORY_KEY] as ItemCategory
-            val imageRemoteUrl = json[IMAGE_REMOTE_URL_KEY] as String?
-            val imageLocalPath = json[IMAGE_LOCAL_PATH_KEY] as String
+            val type = (json[TYPE_KEY] as String)
+                .let { PostType.valueOf(it) }
+            val latitude = json[LATITUDE_KEY] as? Double?
+            val longitude = json[LONGITUDE_KEY] as? Double?
+            val text =  json[TEXT_KEY] as? String
+            val category = (json[CATEGORY_KEY] as? String)
+                ?.let { ItemCategory.valueOf(it) }
+                ?: ItemCategory.OTHER
+            val imageRemoteUrl = json[IMAGE_REMOTE_URL_KEY] as? String?
+            val imageLocalPath = json[IMAGE_LOCAL_PATH_KEY] as? String
             val timestamp = json[LAST_UPDATED_KEY] as? Timestamp
             val lastUpdatedLong = timestamp?.toDate()?.time
 
@@ -92,7 +95,8 @@ data class Post(
             CATEGORY_KEY to category.name,
             IMAGE_REMOTE_URL_KEY to imageRemoteUrl,
             IMAGE_LOCAL_PATH_KEY to imageLocalPath,
-            LAST_UPDATED_KEY to FieldValue.serverTimestamp()
+            LAST_UPDATED_KEY to Timestamp.now()
+
         )
 
     }
