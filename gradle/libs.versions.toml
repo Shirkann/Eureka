@@ -16,6 +16,7 @@ picasso = "2.8"
 googleServices = "4.4.2"
 firebaseAuth = "24.0.1"
 firebaseBom = "34.7.0"
+swiperefreshlayout = "1.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,6 +41,7 @@ firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
 picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -4,7 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eureka.databinding.PostRowLayoutBinding
-import com.example.eureka.models.Post
+import com.example.eureka.models.Post.Post
+
 
 class PostsAdapter(
     var posts: MutableList<Post>) : RecyclerView.Adapter<PostRowViewHolder>() {
@@ -20,4 +21,11 @@ class PostsAdapter(
     override fun onBindViewHolder(holder: PostRowViewHolder, position: Int) {
         holder.bind(posts[position])
     }
+
+    fun update(newPosts: List<Post>) {
+        posts.clear()
+        posts.addAll(newPosts)
+        notifyDataSetChanged()
+    }
+
 }

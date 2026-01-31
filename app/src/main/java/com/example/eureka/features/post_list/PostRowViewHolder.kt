@@ -2,7 +2,7 @@ package com.example.eureka.features.post_list
 
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eureka.databinding.PostRowLayoutBinding
-import com.example.eureka.models.Post
+import com.example.eureka.models.Post.Post
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
@@ -19,10 +19,7 @@ class PostRowViewHolder(
         binding.dateText.text = formatDate(post.createdAt)
 
         binding.subTitle.text =
-            if (post.latitude != null && post.longitude != null)
-                "מיקום ידוע"
-            else
-                "מיקום לא צוין"
+            post.locationName ?: "מיקום לא צוין"
 
         binding.bodyText.text = post.text
 

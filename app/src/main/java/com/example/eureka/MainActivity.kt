@@ -33,10 +33,8 @@ class MainActivity : AppCompatActivity() {
         // Check if user is logged in
         val auth = FirebaseAuth.getInstance()
         if (auth.currentUser != null) {
-            // If logged in, set start destination to home
-            navGraph.setStartDestination(R.id.homeFragment)
+            navGraph.setStartDestination(R.id.postListFragment)
         } else {
-            // If not logged in, set start destination to login
             navGraph.setStartDestination(R.id.loginFragment)
         }
         navController.graph = navGraph
