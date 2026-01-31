@@ -1,8 +1,6 @@
 package com.example.eureka.features.create_post
 
 import android.Manifest
-import android.content.pm.PackageManager
-import android.location.Geocoder
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
@@ -10,17 +8,16 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresPermission
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
 import com.example.eureka.models.FireBaseModel
 import com.example.eureka.models.ItemCategory
-import com.example.eureka.models.Post
-import com.example.eureka.models.PostType
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
-import com.google.android.gms.tasks.CancellationTokenSource
+import com.example.eureka.models.Post.Post
+import com.example.eureka.models.Post.PostType
+import com.example.eureka.utils.LocationUtils.getAddressFromLocation
+import com.example.eureka.utils.LocationUtils.getCurrentLocation
+import com.example.eureka.utils.LocationUtils.hasLocationPermission
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -29,10 +26,8 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import java.util.Date
-import java.util.Locale
 import java.util.UUID
 
-@Suppress("DEPRECATION")
 class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
 
     // View References
@@ -45,18 +40,25 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
     private lateinit var locationInput: TextInputEditText
     private lateinit var locationInputLayout: TextInputLayout
 
-    // State Variables
+    // State
     private var selectedPostType: PostType = PostType.LOST
     private var selectedItemCategory: ItemCategory? = null
     private var selectedLatitude: Double? = null
     private var selectedLongitude: Double? = null
+    private var locationName: String? = null
 
+
+    // Permission launcher
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                getLocation()
+                loadLocation()
             } else {
-                Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Location permission denied",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -77,7 +79,8 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
         locationInput = view.findViewById(R.id.locationInput)
         locationInputLayout = view.findViewById(R.id.locationInputLayout)
 
-        requireActivity().findViewById<View?>(R.id.fragment_bg)
+        requireActivity()
+            .findViewById<View?>(R.id.fragment_bg)
             ?.setBackgroundColor(requireContext().getColor(R.color.white))
     }
 
@@ -88,19 +91,21 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
     }
 
     private fun setupSegmentedControl() {
-        // Set initial state
-        val startCheckedId = group.checkedButtonId.takeIf { it != View.NO_ID } ?: R.id.btn_lostCreate
-        applyTextStyles(startCheckedId)
-        selectedPostType = if (startCheckedId == R.id.btn_lostCreate) PostType.LOST else PostType.FOUND
+        val startCheckedId =
+            group.checkedButtonId.takeIf { it != View.NO_ID } ?: R.id.btn_lostCreate
 
-        // Add listener for changes
+        applyTextStyles(startCheckedId)
+        selectedPostType =
+            if (startCheckedId == R.id.btn_lostCreate) PostType.LOST else PostType.FOUND
+
         group.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
+
             applyTextStyles(checkedId)
             selectedPostType = when (checkedId) {
                 R.id.btn_lostCreate -> PostType.LOST
                 R.id.btn_foundCreate -> PostType.FOUND
-                else -> PostType.LOST // Should not happen
+                else -> PostType.LOST
             }
         }
     }
@@ -113,16 +118,24 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
             ItemCategory.BAG to "תיק",
             ItemCategory.OTHER to "אחר"
         )
-        val itemTypeNames = itemCategoryMap.values.toList()
-        val itemTypeAdapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, itemTypeNames)
 
-        itemTypeInput.setAdapter(itemTypeAdapter)
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_list_item_1,
+            itemCategoryMap.values.toList()
+        )
+
+        itemTypeInput.setAdapter(adapter)
+
         itemTypeInput.setOnItemClickListener { parent, _, position, _ ->
             val selectedName = parent.getItemAtPosition(position) as String
-            selectedItemCategory = itemCategoryMap.entries.find { it.value == selectedName }?.key
+            selectedItemCategory =
+                itemCategoryMap.entries.firstOrNull { it.value == selectedName }?.key
         }
-        itemTypeInput.setOnClickListener { itemTypeInput.showDropDown() }
+
+        itemTypeInput.setOnClickListener {
+            itemTypeInput.showDropDown()
+        }
     }
 
     private fun setupCreateButton() {
@@ -133,7 +146,7 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
 
     private fun createPost() {
         val user = Firebase.auth.currentUser
-        val description = descriptionInput.text.toString()
+        val description = descriptionInput.text?.toString().orEmpty()
 
         if (user == null) {
             Toast.makeText(requireContext(), "You must be logged in", Toast.LENGTH_SHORT).show()
@@ -141,7 +154,11 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
         }
 
         if (selectedItemCategory == null) {
-            Toast.makeText(requireContext(), "Please select an item category", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Please select an item category",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
@@ -152,6 +169,7 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
             type = selectedPostType,
             latitude = selectedLatitude,
             longitude = selectedLongitude,
+            locationName = locationName,
             text = description,
             category = selectedItemCategory!!,
             imageRemoteUrl = null,
@@ -159,15 +177,20 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
             lastUpdated = null
         )
 
-            FireBaseModel().addPost(newPost) { success ->
+
+        FireBaseModel().addPost(newPost) { success ->
             if (success) {
-                findNavController().navigate(R.id.action_createPost_to_home)
+                findNavController()
+                    .navigate(R.id.action_createPost_to_home)
             } else {
-                Toast.makeText(requireContext(), "Failed to create post", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Failed to create post",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
-
 
     private fun applyTextStyles(checkedId: Int) {
         val selected = R.style.SegmentedText_Selected
@@ -178,6 +201,7 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
                 btnLostCreate.setTextAppearance(selected)
                 btnFoundCreate.setTextAppearance(unselected)
             }
+
             R.id.btn_foundCreate -> {
                 btnFoundCreate.setTextAppearance(selected)
                 btnLostCreate.setTextAppearance(unselected)
@@ -186,47 +210,34 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
     }
 
     private fun checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            getLocation()
+        if (hasLocationPermission(requireContext())) {
+            loadLocation()
         } else {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
-    @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    private fun getLocation() {
+    @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+    private fun loadLocation() {
         locationInput.setText("מאחזר מיקום...")
-        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, CancellationTokenSource().token)
-            .addOnSuccessListener { location ->
-                if (location != null) {
-                    selectedLatitude = location.latitude
-                    selectedLongitude = location.longitude
-                    getTextFromLocation(location.latitude, location.longitude)
-                } else {
-                    locationInput.setText("Unable to get location")
-                }
+        getCurrentLocation(
+            context = requireContext(),
+            onSuccess = { lat, lng ->
+                selectedLatitude = lat
+                selectedLongitude = lng
+
+                locationName =
+                    getAddressFromLocation(requireContext(), lat, lng)
+
+                locationInput.setText(locationName ?: "כתובת לא נמצאה")
+                locationInputLayout.hint = ""
+            },
+            onError = {
+                locationInput.setText("לא ניתן לאתר מיקום")
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
             }
-            .addOnFailureListener {
-                locationInput.setText("Failed to get location")
-                Toast.makeText(requireContext(), "Failed to get location: ${it.message}", Toast.LENGTH_SHORT).show()
-            }
+        )
     }
 
-    private fun getTextFromLocation(latitude: Double, longitude: Double) {
-        val geocoder = Geocoder(requireContext(), Locale.getDefault())
-        try {
-            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
-            val address = addresses?.firstOrNull()?.getAddressLine(0)
-            locationInput.setText(address ?: "Address not found")
-            locationInputLayout.hint = ""
-        } catch (e: Exception) {
-            locationInput.setText("Unable to get address")
-        }
-    }
 }

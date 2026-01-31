@@ -17,7 +17,7 @@
         android:title="פרופיל"/>
 
     <item
-        android:id="@+id/homeFragment"
+        android:id="@+id/postListFragment"
         android:icon="@drawable/home_selector"
         android:title="בית"/>
 

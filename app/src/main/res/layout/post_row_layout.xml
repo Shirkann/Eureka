@@ -22,7 +22,9 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="#000"
-            tools:text="כומתת נחל עם כיתוב"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="LOST"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -36,17 +38,33 @@
             android:textColor="#777"
             tools:text="19.12.2025 | 12:23"
             app:layout_constraintTop_toBottomOf="@id/titleText"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/bodyText"
+            app:layout_constraintVertical_bias="0"/>
+
+        <!-- Barrier שמסמן את סוף התאריך -->
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/dateEndBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="end"
+            app:constraint_referenced_ids="dateText" />
 
         <!-- מיקום -->
         <TextView
             android:id="@+id/subTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="#4F7CFF"
             android:textSize="13sp"
-            tools:text="תחנה מרכזית ירושלים"
-            app:layout_constraintTop_toBottomOf="@id/titleText"
+            android:textStyle="bold"
+            android:layout_marginStart="10dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="2600 Amphitheatre Pkwy, Mountain View, CA 94043, USA"
+            app:layout_constraintTop_toTopOf="@id/dateText"
+            app:layout_constraintBottom_toBottomOf="@id/dateText"
+            app:layout_constraintStart_toEndOf="@id/dateEndBarrier"
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <!-- מלל -->
@@ -57,7 +75,7 @@
             android:layout_marginTop="8dp"
             android:textSize="14sp"
             android:textColor="#333"
-            tools:text="נמצאה כומתת נחל עם כיתוב פנימי, נמצאה באזור התחנה המרכזית. מי שמזהה מוזמן לפנות."
+            tools:text="shiran testing good"
             app:layout_constraintTop_toBottomOf="@id/dateText"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -82,7 +100,7 @@
             android:layout_marginTop="8dp"
             android:textSize="13sp"
             android:textColor="#444"
-            tools:text="פורסם על ידי: שירן לוי"
+            tools:text="פורסם על ידי: shiran"
             app:layout_constraintTop_toBottomOf="@id/itemImage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -94,7 +112,7 @@
             android:layout_height="wrap_content"
             android:textSize="12sp"
             android:textColor="#4F7CFF"
-            tools:text="פרטי לבוש"
+            tools:text="WALLET"
             app:chipBackgroundColor="#EAEAFF"
             app:chipCornerRadius="16dp"
             app:chipMinHeight="28dp"

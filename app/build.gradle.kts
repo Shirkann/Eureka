@@ -54,6 +54,7 @@ dependencies {
 
     implementation("com.google.android.material:material:1.13.0")
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.swiperefreshlayout)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
@@ -67,7 +68,7 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation("com.google.android.gms:play-services-location:21.2.0")
-
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

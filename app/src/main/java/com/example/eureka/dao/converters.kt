@@ -2,7 +2,7 @@ package com.example.eureka.dao
 
 import androidx.room.TypeConverter
 import com.example.eureka.models.ItemCategory
-import com.example.eureka.models.PostType
+import com.example.eureka.models.Post.PostType
 
 class Converters {
 
