@@ -8,7 +8,9 @@ import com.example.eureka.models.Post.Post
 
 
 class PostsAdapter(
-    var posts: MutableList<Post>) : RecyclerView.Adapter<PostRowViewHolder>() {
+    var posts: MutableList<Post>,
+    private val onPostClick: (Post) -> Unit
+) : RecyclerView.Adapter<PostRowViewHolder>() {
 
     override fun getItemCount(): Int = posts.size
 
@@ -20,6 +22,9 @@ class PostsAdapter(
 
     override fun onBindViewHolder(holder: PostRowViewHolder, position: Int) {
         holder.bind(posts[position])
+        holder.itemView.setOnClickListener {
+            onPostClick(posts[position])
+        }
     }
 
     fun update(newPosts: List<Post>) {
