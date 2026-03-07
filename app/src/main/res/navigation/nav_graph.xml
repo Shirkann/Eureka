@@ -47,7 +47,12 @@
         android:id="@+id/postListFragment"
         android:name="com.example.eureka.features.post_list.PostListFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_post_list" />
+        tools:layout="@layout/fragment_post_list">
+
+        <action
+            android:id="@+id/action_post_list_to_detail"
+            app:destination="@id/postDetailFragment" />
+    </fragment>
 
     <!-- ===== Create Post ===== -->
     <fragment
@@ -75,6 +80,22 @@
         android:id="@+id/mapFragment"
         android:name="com.example.eureka.fragments.MapFragment"
         android:label="Map"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map">
+
+        <action
+            android:id="@+id/action_map_to_post_detail"
+            app:destination="@id/postDetailFragment" />
+    </fragment>
+
+    <!-- ===== Post Detail ===== -->
+    <fragment
+        android:id="@+id/postDetailFragment"
+        android:name="com.example.eureka.features.post_detail.PostDetailFragment"
+        android:label="Post Detail"
+        tools:layout="@layout/fragment_post_detail">
+        <argument
+            android:name="postId"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

@@ -2,6 +2,7 @@ package com.example.eureka.features.post_list
 
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eureka.databinding.PostRowLayoutBinding
+import com.example.eureka.models.FireBaseModel
 import com.example.eureka.models.Post.Post
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
@@ -12,30 +13,23 @@ class PostRowViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(post: Post) {
-
-        binding.titleText.text =
-            post.type?.name ?: post.category.name
-
+        binding.titleText.text = post.type?.name ?: post.category.name
         binding.dateText.text = formatDate(post.createdAt)
-
-        binding.subTitle.text =
-            post.locationName ?: "מיקום לא צוין"
-
+        binding.subTitle.text = post.locationName ?: "מיקום לא צוין"
         binding.bodyText.text = post.text
-
-        binding.descriptionText.text =
-            "פורסם על ידי: ${post.ownerId}"
-
         binding.detailsTag.text = post.category.name
+
+        FireBaseModel().getUserById(post.ownerId) { user ->
+            if (user != null) {
+                binding.descriptionText.text = "פורסם על ידי: ${user.fullname}"
+            } else {
+                binding.descriptionText.text = "פורסם על ידי: Unknown"
+            }
+        }
 
         if (!post.imageRemoteUrl.isNullOrEmpty()) {
             binding.itemImage.visibility = android.view.View.VISIBLE
-            Picasso
-                .get()
-                .load(post.imageRemoteUrl)
-                .fit()
-                .centerCrop()
-                .into(binding.itemImage)
+            Picasso.get().load(post.imageRemoteUrl).fit().centerCrop().into(binding.itemImage)
         } else {
             binding.itemImage.visibility = android.view.View.GONE
         }

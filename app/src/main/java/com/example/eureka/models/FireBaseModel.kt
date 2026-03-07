@@ -150,4 +150,32 @@ class FireBaseModel {
                 Log.e(TAG, "FB:deletePost FAILED id=${post.id}", e)
             }
     }
+
+    fun getPostById(postId: String, completion: (Post?) -> Unit) {
+        db.collection(POSTS).document(postId).get().addOnSuccessListener { document ->
+            if (document.exists()) {
+                val post = Post.fromJson(document.data ?: emptyMap())
+                completion(post)
+            } else {
+                completion(null)
+            }
+        }.addOnFailureListener {
+            completion(null)
+        }
+    }
+
+    fun getUserById(userId: String, completion: (User?) -> Unit) {
+        db.collection(USERS).document(userId).get().addOnSuccessListener { document ->
+            if (document.exists()) {
+                val fullname = document.getString("fullname") ?: "Unknown"
+                val email = document.getString("email") ?: ""
+                val user = User(userId, fullname, email)
+                completion(user)
+            } else {
+                completion(null)
+            }
+        }.addOnFailureListener {
+            completion(null)
+        }
+    }
 }

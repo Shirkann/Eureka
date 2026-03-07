@@ -25,7 +25,12 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import android.location.Geocoder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
 class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
@@ -37,7 +42,7 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
     private lateinit var createButton: Button
     private lateinit var descriptionInput: TextInputEditText
     private lateinit var itemTypeInput: MaterialAutoCompleteTextView
-    private lateinit var locationInput: TextInputEditText
+    private lateinit var locationInput: MaterialAutoCompleteTextView
     private lateinit var locationInputLayout: TextInputLayout
 
     // State
@@ -46,6 +51,8 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
     private var selectedLatitude: Double? = null
     private var selectedLongitude: Double? = null
     private var locationName: String? = null
+    private var isLoadingLocation = false  // Flag to prevent TextWatcher from interfering during GPS load
+    private var addressSuggestions: MutableMap<String, Pair<Double, Double>> = mutableMapOf()  // Store address -> (lat, lng)
 
 
     // Permission launcher
@@ -87,6 +94,7 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
     private fun setupUI() {
         setupSegmentedControl()
         setupCategoryDropdown()
+        setupLocationInput()
         setupCreateButton()
     }
 
@@ -135,6 +143,71 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
 
         itemTypeInput.setOnClickListener {
             itemTypeInput.showDropDown()
+        }
+    }
+
+    private fun setupLocationInput() {
+        locationInput.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Only update locationName if user is manually editing (not while loading GPS)
+                if (!isLoadingLocation) {
+                    locationName = s?.toString()
+
+                    // Search for address suggestions when user types
+                    if ((s?.length ?: 0) >= 3) {
+                        searchAddresses(s.toString())
+                    }
+                }
+            }
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+
+        // Handle selection from autocomplete suggestions
+        locationInput.setOnItemClickListener { _, _, position, _ ->
+            val selectedText = (locationInput.adapter as? ArrayAdapter<*>)?.getItem(position) as? String
+            selectedText?.let {
+                locationInput.setText(it)
+                // Get coordinates for the selected address
+                val coords = addressSuggestions[it]
+                if (coords != null) {
+                    selectedLatitude = coords.first
+                    selectedLongitude = coords.second
+                    locationName = it
+                }
+            }
+        }
+    }
+
+    private fun searchAddresses(query: String) {
+        CoroutineScope(Dispatchers.Default).launch {
+            try {
+                val geocoder = Geocoder(requireContext(), Locale.getDefault())
+                val addresses = geocoder.getFromLocationName(query, 5)  // Get up to 5 suggestions
+
+                addressSuggestions.clear()
+                val suggestions = mutableListOf<String>()
+
+                addresses?.forEach { address ->
+                    val fullAddress = address.getAddressLine(0)
+                    addressSuggestions[fullAddress] = Pair(address.latitude, address.longitude)
+                    suggestions.add(fullAddress)
+                }
+
+                if (suggestions.isNotEmpty()) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val adapter = ArrayAdapter(
+                            requireContext(),
+                            android.R.layout.simple_list_item_1,
+                            suggestions
+                        )
+                        locationInput.setAdapter(adapter)
+                        locationInput.showDropDown()
+                    }
+                }
+            } catch (_: Exception) {
+                // Silently fail, user can still edit manually
+            }
         }
     }
 
@@ -211,6 +284,7 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
 
     private fun checkLocationPermission() {
         if (hasLocationPermission(requireContext())) {
+            @Suppress("MissingPermission")
             loadLocation()
         } else {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -219,6 +293,7 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
 
     @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
     private fun loadLocation() {
+        isLoadingLocation = true
         locationInput.setText("מאחזר מיקום...")
 
         getCurrentLocation(
@@ -232,10 +307,12 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
 
                 locationInput.setText(locationName ?: "כתובת לא נמצאה")
                 locationInputLayout.hint = ""
+                isLoadingLocation = false
             },
             onError = {
                 locationInput.setText("לא ניתן לאתר מיקום")
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                isLoadingLocation = false
             }
         )
     }
