@@ -45,6 +45,23 @@ class PostsRepository private constructor() {
         }
     }
 
+    fun getPostsByUser(userId: String): LiveData<MutableList<Post>> {
+        return database.postDao.getPostsByUser(userId)
+    }
+
+    fun refreshPostsByUser(
+        userId: String,
+        onDone: () -> Unit
+    ) {
+        firebaseModel.getPostsByUser(0L, userId) { posts ->
+            executor.execute {
+                for (post in posts) {
+                    database.postDao.insert(post)
+                }
+                onDone()
+            }
+        }
+    }
 
 
 

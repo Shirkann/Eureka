@@ -71,9 +71,21 @@
     <!-- ===== Profile ===== -->
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.eureka.fragments.ProfileFragment"
+        android:name="com.example.eureka.features.profile.ProfileFragment"
         android:label="Profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+
+        <action
+            android:id="@+id/action_profile_to_login"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/profileFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_profile_to_detail"
+            app:destination="@id/postDetailFragment" />
+    </fragment>
+
 
     <!-- ===== Map ===== -->
     <fragment
