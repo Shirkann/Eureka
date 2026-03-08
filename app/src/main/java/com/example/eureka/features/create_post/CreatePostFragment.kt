@@ -294,7 +294,7 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
     @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
     private fun loadLocation() {
         isLoadingLocation = true
-        locationInput.setText("מאחזר מיקום...")
+        locationInput.setText("מאתר מיקום...")
 
         getCurrentLocation(
             context = requireContext(),
