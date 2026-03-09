@@ -12,4 +12,8 @@
     <string name="registerbuttontext">הרשמה</string>
     <string name="PostCreateDescription">יצירת פוסט</string>
     <string name="google_maps_key"></string>
+    <string name="back">← חזרה</string>
+    <string name="edit">ערוך</string>
+    <string name="delete">מחק</string>
+    <string name="post_image_description">תמונת פוסט</string>
 </resources>
