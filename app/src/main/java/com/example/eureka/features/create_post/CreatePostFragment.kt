@@ -26,6 +26,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import android.location.Geocoder
+import com.example.eureka.models.Post.PostsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -54,6 +55,7 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
     private var isLoadingLocation = false  // Flag to prevent TextWatcher from interfering during GPS load
     private var addressSuggestions: MutableMap<String, Pair<Double, Double>> = mutableMapOf()  // Store address -> (lat, lng)
 
+    private var editingPostId: String? = null
 
     // Permission launcher
     private val requestPermissionLauncher =
@@ -71,9 +73,16 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        editingPostId = arguments?.getString("postId")
+
         initViews(view)
         setupUI()
-        checkLocationPermission()
+
+        if (editingPostId != null) {
+            loadPostToEdit(editingPostId!!)
+        } else {
+            checkLocationPermission()
+        }
     }
 
     private fun initViews(view: View) {
@@ -96,6 +105,42 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
         setupCategoryDropdown()
         setupLocationInput()
         setupCreateButton()
+
+        if (editingPostId != null) {
+            createButton.text = "עדכן פוסט"
+        }
+    }
+
+    private fun loadPostToEdit(postId: String) {
+        FireBaseModel().getPostById(postId) { post ->
+            if (post != null) {
+                selectedPostType = post.type ?: PostType.LOST
+                if (selectedPostType == PostType.LOST) {
+                    group.check(R.id.btn_lostCreate)
+                } else {
+                    group.check(R.id.btn_foundCreate)
+                }
+
+                descriptionInput.setText(post.text)
+                selectedItemCategory = post.category
+                itemTypeInput.setText(getItemCategoryName(post.category), false)
+
+                locationInput.setText(post.locationName)
+                locationName = post.locationName
+                selectedLatitude = post.latitude
+                selectedLongitude = post.longitude
+            }
+        }
+    }
+
+    private fun getItemCategoryName(category: ItemCategory): String {
+        return when (category) {
+            ItemCategory.PHONE -> "טלפון"
+            ItemCategory.KEYS -> "מפתחות"
+            ItemCategory.WALLET -> "ארנק"
+            ItemCategory.BAG -> "תיק"
+            ItemCategory.OTHER -> "אחר"
+        }
     }
 
     private fun setupSegmentedControl() {
@@ -213,7 +258,11 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
 
     private fun setupCreateButton() {
         createButton.setOnClickListener {
-            createPost()
+            if (editingPostId != null) {
+                updatePost()
+            } else {
+                createPost()
+            }
         }
     }
 
@@ -247,11 +296,11 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
             category = selectedItemCategory!!,
             imageRemoteUrl = null,
             imageLocalPath = null,
-            lastUpdated = null
+            lastUpdated = Date().time
         )
 
 
-        FireBaseModel().addPost(newPost) { success ->
+        PostsRepository.shared.addPost(newPost) { success ->
             if (success) {
                 findNavController()
                     .navigate(R.id.action_createPost_to_home)
@@ -261,6 +310,41 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
                     "Failed to create post",
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+        }
+    }
+
+    private fun updatePost() {
+        val user = Firebase.auth.currentUser
+        val description = descriptionInput.text?.toString().orEmpty()
+
+        if (user == null || editingPostId == null) return
+
+        if (selectedItemCategory == null) {
+            Toast.makeText(requireContext(), "Please select an item category", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        FireBaseModel().getPostById(editingPostId!!) { originalPost ->
+            if (originalPost != null) {
+                val updatedPost = originalPost.copy(
+                    type = selectedPostType,
+                    latitude = selectedLatitude,
+                    longitude = selectedLongitude,
+                    locationName = locationName,
+                    text = description,
+                    category = selectedItemCategory!!,
+                    lastUpdated = Date().time
+                )
+
+                PostsRepository.shared.updatePost(updatedPost) { success ->
+                    if (success) {
+                        Toast.makeText(requireContext(), "פוסט עודכן בהצלחה", Toast.LENGTH_SHORT).show()
+                        findNavController().popBackStack()
+                    } else {
+                        Toast.makeText(requireContext(), "עדכון נכשל", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
     }

@@ -16,10 +16,40 @@
             android:id="@+id/backButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="← חזרה"
+            android:text="@string/back"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Edit and Delete Buttons (Visible for owner only) -->
+        <LinearLayout
+            android:id="@+id/ownerActionsLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="visible">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/editButton"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/edit"
+                app:icon="@android:drawable/ic_menu_edit" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/deleteButton"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/delete"
+                android:textColor="@android:color/holo_red_dark"
+                app:icon="@android:drawable/ic_menu_delete"
+                app:iconTint="@android:color/holo_red_dark" />
+        </LinearLayout>
 
         <!-- כותרת -->
         <TextView
@@ -81,6 +111,7 @@
             android:layout_height="300dp"
             android:layout_marginTop="16dp"
             android:scaleType="centerCrop"
+            android:contentDescription="@string/post_image_description"
             tools:src="@drawable/sample_image"
             app:layout_constraintTop_toBottomOf="@id/bodyText"
             app:layout_constraintStart_toStartOf="parent"
@@ -117,4 +148,3 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>
-

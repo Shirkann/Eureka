@@ -110,7 +110,7 @@ class FireBaseModel {
 
     /**
      * ===============================
-     *  ADD POST
+     *  ADD / UPDATE POST
      * ===============================
      */
     fun addPost(
@@ -137,7 +137,7 @@ class FireBaseModel {
      *  DELETE POST
      * ===============================
      */
-    fun deletePost(post: Post) {
+    fun deletePost(post: Post, completion: (Boolean) -> Unit) {
         Log.d(TAG, "FB:deletePost id=${post.id}")
 
         db.collection(POSTS)
@@ -145,9 +145,11 @@ class FireBaseModel {
             .delete()
             .addOnSuccessListener {
                 Log.d(TAG, "FB:deletePost SUCCESS id=${post.id}")
+                completion(true)
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "FB:deletePost FAILED id=${post.id}", e)
+                completion(false)
             }
     }
 
