@@ -1,13 +1,17 @@
 package com.example.eureka.features.create_post
 
 import android.Manifest
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresPermission
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
@@ -27,9 +31,11 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import android.location.Geocoder
 import com.example.eureka.models.Post.PostsRepository
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
@@ -45,6 +51,9 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
     private lateinit var itemTypeInput: MaterialAutoCompleteTextView
     private lateinit var locationInput: MaterialAutoCompleteTextView
     private lateinit var locationInputLayout: TextInputLayout
+    private lateinit var takePictureButton: Button
+    private lateinit var chooseFromGalleryButton: Button
+    private lateinit var postImage: ImageView
 
     // State
     private var selectedPostType: PostType = PostType.LOST
@@ -52,10 +61,10 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
     private var selectedLatitude: Double? = null
     private var selectedLongitude: Double? = null
     private var locationName: String? = null
-    private var isLoadingLocation = false  // Flag to prevent TextWatcher from interfering during GPS load
-    private var addressSuggestions: MutableMap<String, Pair<Double, Double>> = mutableMapOf()  // Store address -> (lat, lng)
-
+    private var isLoadingLocation = false
+    private var addressSuggestions: MutableMap<String, Pair<Double, Double>> = mutableMapOf()
     private var editingPostId: String? = null
+    private var imageUri: Uri? = null
 
     // Permission launcher
     private val requestPermissionLauncher =
@@ -63,13 +72,22 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
             if (isGranted) {
                 loadLocation()
             } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Location permission denied",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT).show()
             }
         }
+
+    private val takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) {
+            imageUri?.let { postImage.setImageURI(it) }
+        }
+    }
+
+    private val chooseFromGalleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            imageUri = it
+            postImage.setImageURI(it)
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -94,6 +112,9 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
         itemTypeInput = view.findViewById(R.id.itemTypeInput)
         locationInput = view.findViewById(R.id.locationInput)
         locationInputLayout = view.findViewById(R.id.locationInputLayout)
+        takePictureButton = view.findViewById(R.id.btn_take_picture)
+        chooseFromGalleryButton = view.findViewById(R.id.btn_choose_from_gallery)
+        postImage = view.findViewById(R.id.post_image)
 
         requireActivity()
             .findViewById<View?>(R.id.fragment_bg)
@@ -105,10 +126,27 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
         setupCategoryDropdown()
         setupLocationInput()
         setupCreateButton()
+        setupImageButtons()
 
         if (editingPostId != null) {
             createButton.text = "עדכן פוסט"
         }
+    }
+
+    private fun setupImageButtons() {
+        takePictureButton.setOnClickListener {
+            imageUri = createImageUri()
+            takePictureLauncher.launch(imageUri)
+        }
+
+        chooseFromGalleryButton.setOnClickListener {
+            chooseFromGalleryLauncher.launch("image/*")
+        }
+    }
+
+    private fun createImageUri(): Uri {
+        val imageFile = File(requireContext().externalCacheDir, "${UUID.randomUUID()}.jpg")
+        return FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.provider", imageFile)
     }
 
     private fun loadPostToEdit(postId: String) {
@@ -129,6 +167,10 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
                 locationName = post.locationName
                 selectedLatitude = post.latitude
                 selectedLongitude = post.longitude
+
+                post.imageRemoteUrl?.let {
+                    Picasso.get().load(it).into(postImage)
+                }
             }
         }
     }
@@ -195,11 +237,9 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
         locationInput.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Only update locationName if user is manually editing (not while loading GPS)
                 if (!isLoadingLocation) {
                     locationName = s?.toString()
 
-                    // Search for address suggestions when user types
                     if ((s?.length ?: 0) >= 3) {
                         searchAddresses(s.toString())
                     }
@@ -208,12 +248,10 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
             override fun afterTextChanged(s: android.text.Editable?) {}
         })
 
-        // Handle selection from autocomplete suggestions
         locationInput.setOnItemClickListener { _, _, position, _ ->
             val selectedText = (locationInput.adapter as? ArrayAdapter<*>)?.getItem(position) as? String
             selectedText?.let {
                 locationInput.setText(it)
-                // Get coordinates for the selected address
                 val coords = addressSuggestions[it]
                 if (coords != null) {
                     selectedLatitude = coords.first
@@ -228,7 +266,7 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
         CoroutineScope(Dispatchers.Default).launch {
             try {
                 val geocoder = Geocoder(requireContext(), Locale.getDefault())
-                val addresses = geocoder.getFromLocationName(query, 5)  // Get up to 5 suggestions
+                val addresses = geocoder.getFromLocationName(query, 5)
 
                 addressSuggestions.clear()
                 val suggestions = mutableListOf<String>()
@@ -276,40 +314,57 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
         }
 
         if (selectedItemCategory == null) {
-            Toast.makeText(
-                requireContext(),
-                "Please select an item category",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(requireContext(), "Please select an item category", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val newPost = Post(
-            id = UUID.randomUUID().toString(),
-            ownerId = user.uid,
-            createdAt = Date().time,
-            type = selectedPostType,
-            latitude = selectedLatitude,
-            longitude = selectedLongitude,
-            locationName = locationName,
-            text = description,
-            category = selectedItemCategory!!,
-            imageRemoteUrl = null,
-            imageLocalPath = null,
-            lastUpdated = Date().time
-        )
+        if (imageUri != null) {
+            FireBaseModel().uploadImage(imageUri!!) { imageUrl ->
+                if (imageUrl != null) {
+                    val newPost = Post(
+                        id = UUID.randomUUID().toString(),
+                        ownerId = user.uid,
+                        createdAt = Date().time,
+                        type = selectedPostType,
+                        latitude = selectedLatitude,
+                        longitude = selectedLongitude,
+                        locationName = locationName,
+                        text = description,
+                        category = selectedItemCategory!!,
+                        imageRemoteUrl = imageUrl,
+                        imageLocalPath = null,
+                        lastUpdated = Date().time
+                    )
+                    savePost(newPost)
+                } else {
+                    Toast.makeText(requireContext(), "Failed to upload image", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            val newPost = Post(
+                id = UUID.randomUUID().toString(),
+                ownerId = user.uid,
+                createdAt = Date().time,
+                type = selectedPostType,
+                latitude = selectedLatitude,
+                longitude = selectedLongitude,
+                locationName = locationName,
+                text = description,
+                category = selectedItemCategory!!,
+                imageRemoteUrl = null,
+                imageLocalPath = null,
+                lastUpdated = Date().time
+            )
+            savePost(newPost)
+        }
+    }
 
-
-        PostsRepository.shared.addPost(newPost) { success ->
+    private fun savePost(post: Post) {
+        PostsRepository.shared.addPost(post) { success ->
             if (success) {
-                findNavController()
-                    .navigate(R.id.action_createPost_to_home)
+                findNavController().navigate(R.id.action_createPost_to_home)
             } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Failed to create post",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(requireContext(), "Failed to create post", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -327,24 +382,47 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
 
         FireBaseModel().getPostById(editingPostId!!) { originalPost ->
             if (originalPost != null) {
-                val updatedPost = originalPost.copy(
-                    type = selectedPostType,
-                    latitude = selectedLatitude,
-                    longitude = selectedLongitude,
-                    locationName = locationName,
-                    text = description,
-                    category = selectedItemCategory!!,
-                    lastUpdated = Date().time
-                )
-
-                PostsRepository.shared.updatePost(updatedPost) { success ->
-                    if (success) {
-                        Toast.makeText(requireContext(), "פוסט עודכן בהצלחה", Toast.LENGTH_SHORT).show()
-                        findNavController().popBackStack()
-                    } else {
-                        Toast.makeText(requireContext(), "עדכון נכשל", Toast.LENGTH_SHORT).show()
+                if (imageUri != null) {
+                    FireBaseModel().uploadImage(imageUri!!) { imageUrl ->
+                        if (imageUrl != null) {
+                            val updatedPost = originalPost.copy(
+                                type = selectedPostType,
+                                latitude = selectedLatitude,
+                                longitude = selectedLongitude,
+                                locationName = locationName,
+                                text = description,
+                                category = selectedItemCategory!!,
+                                imageRemoteUrl = imageUrl,
+                                lastUpdated = Date().time
+                            )
+                            saveUpdatedPost(updatedPost)
+                        } else {
+                            Toast.makeText(requireContext(), "Failed to upload image", Toast.LENGTH_SHORT).show()
+                        }
                     }
+                } else {
+                    val updatedPost = originalPost.copy(
+                        type = selectedPostType,
+                        latitude = selectedLatitude,
+                        longitude = selectedLongitude,
+                        locationName = locationName,
+                        text = description,
+                        category = selectedItemCategory!!,
+                        lastUpdated = Date().time
+                    )
+                    saveUpdatedPost(updatedPost)
                 }
+            }
+        }
+    }
+
+    private fun saveUpdatedPost(post: Post) {
+        PostsRepository.shared.updatePost(post) { success ->
+            if (success) {
+                Toast.makeText(requireContext(), "פוסט עודכן בהצלחה", Toast.LENGTH_SHORT).show()
+                findNavController().popBackStack()
+            } else {
+                Toast.makeText(requireContext(), "עדכון נכשל", Toast.LENGTH_SHORT).show()
             }
         }
     }
