@@ -21,7 +21,7 @@ class FireBaseModel {
     companion object {
         const val POSTS = "Posts"
         const val USERS = "users"
-        private const val TAG = "REFRESH_FLOW"
+        private const val TAG = "FireBaseModel"
     }
 
     fun uploadImage(imageUri: Uri, completion: (String?) -> Unit) {
@@ -30,7 +30,8 @@ class FireBaseModel {
             storageRef.downloadUrl.addOnSuccessListener { uri ->
                 completion(uri.toString())
             }
-        }.addOnFailureListener {
+        }.addOnFailureListener { e ->
+            Log.e(TAG, "Image upload FAILED: ${e.message}", e)
             completion(null)
         }
     }
