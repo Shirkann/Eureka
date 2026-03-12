@@ -91,6 +91,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- מזג אוויר -->
+        <TextView
+            android:id="@+id/weatherText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loading weather..."
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/locationText"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <!-- מלל -->
         <TextView
             android:id="@+id/bodyText"
@@ -100,7 +111,7 @@
             android:textSize="16sp"
             android:textColor="#333"
             tools:text="shiran testing good"
-            app:layout_constraintTop_toBottomOf="@id/locationText"
+            app:layout_constraintTop_toBottomOf="@id/weatherText"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

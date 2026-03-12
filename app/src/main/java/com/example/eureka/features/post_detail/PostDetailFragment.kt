@@ -18,6 +18,9 @@ import com.google.firebase.auth.auth
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import com.example.eureka.utils.RetrofitClient
 
 class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
 
@@ -83,6 +86,8 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
         } else {
             binding?.itemImage?.visibility = View.GONE
         }
+
+        loadWeather(post.latitude, post.longitude)
     }
 
     private fun setupOwnerActions(post: Post) {
@@ -124,5 +129,20 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+    }
+
+    private fun loadWeather(lat: Double?, lon: Double?) {
+
+        if (lat == null || lon == null) return
+
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.weatherApi.getWeather(lat, lon)
+                val temp = response.current_weather.temperature
+                binding?.weatherText?.text = "Weather: ${temp}°C"
+            } catch (e: Exception) {
+                binding?.weatherText?.text = "Weather unavailable"
+            }
+        }
     }
 }
