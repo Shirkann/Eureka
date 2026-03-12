@@ -60,7 +60,11 @@
         android:name="com.example.eureka.features.create_post.CreatePostFragment"
         android:label="Create Post"
         tools:layout="@layout/fragment_createpost">
-
+        <argument
+            android:name="postId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
         <action
             android:id="@+id/action_createPost_to_home"
             app:destination="@id/postListFragment"
@@ -108,6 +112,9 @@
         <argument
             android:name="postId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_postDetailFragment_to_createPostFragment"
+            app:destination="@id/createPostFragment" />
     </fragment>
 
 </navigation>

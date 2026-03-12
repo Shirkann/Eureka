@@ -4,12 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
 import com.example.eureka.databinding.FragmentPostDetailBinding
 import com.example.eureka.models.FireBaseModel
 import com.example.eureka.models.Post.Post
+import com.example.eureka.models.Post.PostsRepository
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
@@ -58,6 +63,15 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
         binding?.bodyText?.text = post.text
         binding?.categoryText?.text = post.category.name
 
+        // Check if current user is owner
+        val currentUser = Firebase.auth.currentUser
+        if (currentUser != null && currentUser.uid == post.ownerId) {
+            binding?.ownerActionsLayout?.visibility = View.VISIBLE
+            setupOwnerActions(post)
+        } else {
+            binding?.ownerActionsLayout?.visibility = View.GONE
+        }
+
         FireBaseModel().getUserById(post.ownerId) { user ->
             if (user != null) {
                 binding?.ownerText?.text = "פורסם על ידי: ${user.fullname}"
@@ -74,6 +88,37 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
         }
 
         loadWeather(post.latitude, post.longitude)
+    }
+
+    private fun setupOwnerActions(post: Post) {
+        binding?.editButton?.setOnClickListener {
+            val bundle = Bundle().apply {
+                putString("postId", post.id)
+            }
+            findNavController().navigate(R.id.action_postDetailFragment_to_createPostFragment, bundle)
+        }
+
+        binding?.deleteButton?.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle("מחיקת פוסט")
+                .setMessage("האם אתה בטוח שברצונך למחוק פוסט זה?")
+                .setPositiveButton("מחק") { _, _ ->
+                    deletePost(post)
+                }
+                .setNegativeButton("ביטול", null)
+                .show()
+        }
+    }
+
+    private fun deletePost(post: Post) {
+        PostsRepository.shared.deletePost(post) { success ->
+            if (success) {
+                Toast.makeText(requireContext(), "הפוסט נמחק בהצלחה", Toast.LENGTH_SHORT).show()
+                findNavController().popBackStack()
+            } else {
+                Toast.makeText(requireContext(), "מחיקה נכשלה", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun formatDate(timestamp: Long): String {
@@ -101,5 +146,3 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
         }
     }
 }
-
-

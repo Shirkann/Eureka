@@ -2,6 +2,7 @@ package com.example.eureka.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -11,7 +12,7 @@ import com.example.eureka.models.Post.Post
 interface PostDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(ost: Post)
+    fun insert(post: Post)
 
     @Query("""
         SELECT * FROM Post
@@ -26,7 +27,9 @@ interface PostDao {
         LIMIT :limit""")
     fun getPostsByType(type: String, limit: Int): LiveData<MutableList<Post>>
 
+    @Delete
+    fun delete(post: Post)
+
     @Query("DELETE FROM Post")
     fun clearAll()
 }
-

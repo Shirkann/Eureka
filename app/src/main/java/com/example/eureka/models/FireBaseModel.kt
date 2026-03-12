@@ -1,5 +1,6 @@
 package com.example.eureka.models
 
+import android.net.Uri
 import android.util.Log
 import com.example.eureka.base.PostsCompletion
 import com.example.eureka.models.Post.Post
@@ -8,7 +9,9 @@ import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.storage
 import java.util.Date
+import java.util.UUID
 
 class FireBaseModel {
 
@@ -18,7 +21,19 @@ class FireBaseModel {
     companion object {
         const val POSTS = "Posts"
         const val USERS = "users"
-        private const val TAG = "REFRESH_FLOW"
+        private const val TAG = "FireBaseModel"
+    }
+
+    fun uploadImage(imageUri: Uri, completion: (String?) -> Unit) {
+        val storageRef = Firebase.storage.reference.child("images/${UUID.randomUUID()}")
+        storageRef.putFile(imageUri).addOnSuccessListener {
+            storageRef.downloadUrl.addOnSuccessListener { uri ->
+                completion(uri.toString())
+            }
+        }.addOnFailureListener { e ->
+            Log.e(TAG, "Image upload FAILED: ${e.message}", e)
+            completion(null)
+        }
     }
 
     /**
@@ -110,7 +125,7 @@ class FireBaseModel {
 
     /**
      * ===============================
-     *  ADD POST
+     *  ADD / UPDATE POST
      * ===============================
      */
     fun addPost(
@@ -137,7 +152,7 @@ class FireBaseModel {
      *  DELETE POST
      * ===============================
      */
-    fun deletePost(post: Post) {
+    fun deletePost(post: Post, completion: (Boolean) -> Unit) {
         Log.d(TAG, "FB:deletePost id=${post.id}")
 
         db.collection(POSTS)
@@ -145,9 +160,11 @@ class FireBaseModel {
             .delete()
             .addOnSuccessListener {
                 Log.d(TAG, "FB:deletePost SUCCESS id=${post.id}")
+                completion(true)
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "FB:deletePost FAILED id=${post.id}", e)
+                completion(false)
             }
     }
 

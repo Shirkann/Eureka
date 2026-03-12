@@ -1,6 +1,7 @@
 package com.example.eureka.models.Post
 
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import com.example.eureka.dao.AppLocalDB
 import com.example.eureka.models.FireBaseModel
@@ -11,6 +12,7 @@ class PostsRepository private constructor() {
     private val firebaseModel = FireBaseModel()
     private val database = AppLocalDB.db
     private val executor = Executors.newSingleThreadExecutor()
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     companion object {
         val shared = PostsRepository()
@@ -63,6 +65,41 @@ class PostsRepository private constructor() {
         }
     }
 
+    fun addPost(post: Post, completion: (Boolean) -> Unit) {
+        firebaseModel.addPost(post) { success ->
+            if (success) {
+                executor.execute {
+                    database.postDao.insert(post)
+                    mainHandler.post {
+                        completion(true)
+                    }
+                }
+            } else {
+                mainHandler.post {
+                    completion(false)
+                }
+            }
+        }
+    }
 
+    fun updatePost(post: Post, completion: (Boolean) -> Unit) {
+        addPost(post, completion)
+    }
 
+    fun deletePost(post: Post, completion: (Boolean) -> Unit) {
+        firebaseModel.deletePost(post) { success ->
+            if (success) {
+                executor.execute {
+                    database.postDao.delete(post)
+                    mainHandler.post {
+                        completion(true)
+                    }
+                }
+            } else {
+                mainHandler.post {
+                    completion(false)
+                }
+            }
+        }
+    }
 }
