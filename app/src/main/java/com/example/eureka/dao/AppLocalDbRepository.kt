@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.eureka.models.Post.Post
-import com.example.eureka.models.User
+import com.example.eureka.models.User.User
 
 @Database(entities = [User::class, Post::class], version = 3)
 @TypeConverters(Converters::class)

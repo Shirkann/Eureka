@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.eureka.R
 import com.example.eureka.databinding.FragmentProfileBinding
 import com.example.eureka.features.post_list.PostsAdapter
-import com.example.eureka.models.FireBaseModel
+import com.example.eureka.models.User.UserFirebaseModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
@@ -20,7 +20,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private var binding: FragmentProfileBinding? = null
     private var adapter: PostsAdapter? = null
-    private val fireBaseModel = FireBaseModel()
+    private val userFirebaseModel = UserFirebaseModel()
     private val viewModel: ProfileViewModel by viewModels()
 
     private var isEditMode = false
@@ -106,7 +106,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private fun loadHeader() {
         val currentUser = Firebase.auth.currentUser ?: return
 
-        fireBaseModel.getUserById(currentUser.uid) { user ->
+        userFirebaseModel.getUserById(currentUser.uid) { user ->
             activity?.runOnUiThread {
                 val fullName = user?.fullname ?: "משתמש"
                 binding?.userName?.text = fullName
@@ -142,7 +142,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             return
         }
 
-        Firebase.firestore.collection(FireBaseModel.USERS)
+        Firebase.firestore.collection(UserFirebaseModel.USERS)
             .document(currentUser.uid)
             .update("fullname", newName)
             .addOnSuccessListener {
@@ -151,18 +151,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             }
             .addOnFailureListener {
                 Toast.makeText(requireContext(), "שגיאה בעדכון הפרטים", Toast.LENGTH_SHORT).show()
-            }
-
-            .addOnSuccessListener {
-                Toast.makeText(requireContext(), "הפרטים עודכנו", Toast.LENGTH_SHORT).show()
-
-                findNavController().navigate(
-                    R.id.profileFragment,
-                    null,
-                    androidx.navigation.NavOptions.Builder()
-                        .setPopUpTo(R.id.profileFragment, true)
-                        .build()
-                )
             }
     }
 

@@ -1,46 +1,51 @@
-package com.example.eureka.models
+package com.example.eureka.models.Post
 
-import android.net.Uri
 import android.util.Log
 import com.example.eureka.base.PostsCompletion
-import com.example.eureka.models.Post.Post
-import com.example.eureka.models.Post.PostType
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
-import com.google.firebase.auth.auth
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.firestore
-import com.google.firebase.storage.storage
 import java.util.Date
-import java.util.UUID
 
-class FireBaseModel {
+class PostFirebaseModel {
 
     private val db = Firebase.firestore
-    private val auth = Firebase.auth
 
     companion object {
         const val POSTS = "Posts"
-        const val USERS = "users"
-        private const val TAG = "FireBaseModel"
+        private const val TAG = "PostFirebaseModel"
     }
 
-    fun uploadImage(imageUri: Uri, completion: (String?) -> Unit) {
-        val storageRef = Firebase.storage.reference.child("images/${UUID.randomUUID()}")
-        storageRef.putFile(imageUri).addOnSuccessListener {
-            storageRef.downloadUrl.addOnSuccessListener { uri ->
-                completion(uri.toString())
+    fun listenToPostsByType(
+        type: PostType,
+        onEvent: (posts: List<Post>, deletedIds: List<String>) -> Unit
+    ) {
+        db.collection(POSTS)
+            .whereEqualTo(Post.TYPE_KEY, type.name)
+            .addSnapshotListener { snapshots, e ->
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e)
+                    return@addSnapshotListener
+                }
+
+                val updatedPosts = mutableListOf<Post>()
+                val deletedIds = mutableListOf<String>()
+
+                for (dc in snapshots!!.documentChanges) {
+                    when (dc.type) {
+                        DocumentChange.Type.ADDED, DocumentChange.Type.MODIFIED -> {
+                            updatedPosts.add(Post.fromJson(dc.document.data))
+                        }
+                        DocumentChange.Type.REMOVED -> {
+                            deletedIds.add(dc.document.id)
+                        }
+                    }
+                }
+                onEvent(updatedPosts, deletedIds)
             }
-        }.addOnFailureListener { e ->
-            Log.e(TAG, "Image upload FAILED: ${e.message}", e)
-            completion(null)
-        }
     }
 
-    /**
-     * ===============================
-     *  POSTS BY USER
-     * ===============================
-     */
     fun getPostsByUser(
         since: Long,
         userId: String,
@@ -67,21 +72,13 @@ class FireBaseModel {
             }
     }
 
-    /**
-     * ===============================
-     *  POSTS BY TYPE (LOST / FOUND)
-     * ===============================
-     */
     fun getPostsByType(
         since: Long,
         type: PostType,
         limit: Int,
         completion: PostsCompletion
     ) {
-        Log.d(
-            TAG,
-            "FB:getPostsByType START type=$type since=$since limit=$limit"
-        )
+        Log.d(TAG, "FB:getPostsByType START type=$type since=$since limit=$limit")
 
         val sinceTimestamp = Timestamp(Date(since))
 
@@ -95,45 +92,22 @@ class FireBaseModel {
             .get()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-
                     val docs = task.result
-                    Log.d(
-                        TAG,
-                        "FB:getPostsByType SUCCESS type=$type docs=${docs.size()}"
-                    )
+                    Log.d(TAG, "FB:getPostsByType SUCCESS type=$type docs=${docs.size()}")
 
                     val posts = docs.map { doc ->
-                        Log.d(
-                            TAG,
-                            "FB:doc id=${doc.id} lastUpdated=${doc.get(Post.LAST_UPDATED_KEY)}"
-                        )
                         Post.fromJson(doc.data)
                     }
-
                     completion(posts)
-
                 } else {
-                    Log.e(
-                        TAG,
-                        "FB:getPostsByType FAILED type=$type",
-                        task.exception
-                    )
+                    Log.e(TAG, "FB:getPostsByType FAILED type=$type", task.exception)
                     completion(emptyList())
                 }
             }
     }
 
-    /**
-     * ===============================
-     *  ADD / UPDATE POST
-     * ===============================
-     */
-    fun addPost(
-        post: Post,
-        completion: (Boolean) -> Unit
-    ) {
+    fun addPost(post: Post, completion: (Boolean) -> Unit) {
         Log.d(TAG, "FB:addPost id=${post.id}")
-
         db.collection(POSTS)
             .document(post.id)
             .set(post.toJson())
@@ -147,14 +121,8 @@ class FireBaseModel {
             }
     }
 
-    /**
-     * ===============================
-     *  DELETE POST
-     * ===============================
-     */
     fun deletePost(post: Post, completion: (Boolean) -> Unit) {
         Log.d(TAG, "FB:deletePost id=${post.id}")
-
         db.collection(POSTS)
             .document(post.id)
             .delete()
@@ -173,21 +141,6 @@ class FireBaseModel {
             if (document.exists()) {
                 val post = Post.fromJson(document.data ?: emptyMap())
                 completion(post)
-            } else {
-                completion(null)
-            }
-        }.addOnFailureListener {
-            completion(null)
-        }
-    }
-
-    fun getUserById(userId: String, completion: (User?) -> Unit) {
-        db.collection(USERS).document(userId).get().addOnSuccessListener { document ->
-            if (document.exists()) {
-                val fullname = document.getString("fullname") ?: "Unknown"
-                val email = document.getString("email") ?: ""
-                val user = User(userId, fullname, email)
-                completion(user)
             } else {
                 completion(null)
             }

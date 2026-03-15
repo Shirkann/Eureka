@@ -1,4 +1,4 @@
-package com.example.eureka.models
+package com.example.eureka.models.User
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

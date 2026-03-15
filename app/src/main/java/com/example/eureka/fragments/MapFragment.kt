@@ -11,8 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
 import com.example.eureka.databinding.FragmentMapBinding
-import com.example.eureka.models.FireBaseModel
 import com.example.eureka.models.Post.Post
+import com.example.eureka.models.Post.PostFirebaseModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -28,6 +28,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private var googleMap: GoogleMap? = null
     private val posts = mutableListOf<Post>()
     private val postsByLocation = mutableMapOf<String, MutableList<Post>>()
+    private val postFirebaseModel = PostFirebaseModel()
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -141,9 +142,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
 
     private fun loadPosts() {
         posts.clear()
-        FireBaseModel().getPostsByType(0L, com.example.eureka.models.Post.PostType.LOST, 100) { lost ->
+        postFirebaseModel.getPostsByType(0L, com.example.eureka.models.Post.PostType.LOST, 100) { lost ->
             posts.addAll(lost)
-            FireBaseModel().getPostsByType(0L, com.example.eureka.models.Post.PostType.FOUND, 100) { found ->
+            postFirebaseModel.getPostsByType(0L, com.example.eureka.models.Post.PostType.FOUND, 100) { found ->
                 posts.addAll(found)
                 addMarkers()
             }

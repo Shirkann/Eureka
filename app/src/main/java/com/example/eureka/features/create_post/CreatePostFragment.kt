@@ -15,9 +15,10 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
-import com.example.eureka.models.FireBaseModel
+import com.example.eureka.models.StorageModel
 import com.example.eureka.models.ItemCategory
 import com.example.eureka.models.Post.Post
+import com.example.eureka.models.Post.PostFirebaseModel
 import com.example.eureka.models.Post.PostType
 import com.example.eureka.utils.LocationUtils.getAddressFromLocation
 import com.example.eureka.utils.LocationUtils.getCurrentLocation
@@ -150,7 +151,7 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
     }
 
     private fun loadPostToEdit(postId: String) {
-        FireBaseModel().getPostById(postId) { post ->
+        PostFirebaseModel().getPostById(postId) { post ->
             if (post != null) {
                 selectedPostType = post.type ?: PostType.LOST
                 if (selectedPostType == PostType.LOST) {
@@ -319,7 +320,7 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
         }
 
         if (imageUri != null) {
-            FireBaseModel().uploadImage(imageUri!!) { imageUrl ->
+            StorageModel().uploadImage(imageUri!!) { imageUrl ->
                 if (imageUrl != null) {
                     val newPost = Post(
                         id = UUID.randomUUID().toString(),
@@ -380,10 +381,10 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
             return
         }
 
-        FireBaseModel().getPostById(editingPostId!!) { originalPost ->
+        PostFirebaseModel().getPostById(editingPostId!!) { originalPost ->
             if (originalPost != null) {
                 if (imageUri != null) {
-                    FireBaseModel().uploadImage(imageUri!!) { imageUrl ->
+                    StorageModel().uploadImage(imageUri!!) { imageUrl ->
                         if (imageUrl != null) {
                             val updatedPost = originalPost.copy(
                                 type = selectedPostType,
@@ -455,25 +456,34 @@ class CreatePostFragment : Fragment(R.layout.fragment_createpost) {
 
     @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
     private fun loadLocation() {
+        val ctx = context ?: return
+
         isLoadingLocation = true
         locationInput.setText("מאתר מיקום...")
 
         getCurrentLocation(
-            context = requireContext(),
+            context = ctx,
             onSuccess = { lat, lng ->
+                if (!isAdded || view == null) return@getCurrentLocation
+
+                val safeContext = context ?: return@getCurrentLocation
+
                 selectedLatitude = lat
                 selectedLongitude = lng
 
-                locationName =
-                    getAddressFromLocation(requireContext(), lat, lng)
+                locationName = getAddressFromLocation(safeContext, lat, lng)
 
                 locationInput.setText(locationName ?: "כתובת לא נמצאה")
                 locationInputLayout.hint = ""
                 isLoadingLocation = false
             },
-            onError = {
+            onError = { errorMessage ->
+                if (!isAdded || view == null) return@getCurrentLocation
+
+                val safeContext = context ?: return@getCurrentLocation
+
                 locationInput.setText("לא ניתן לאתר מיקום")
-                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                Toast.makeText(safeContext, errorMessage, Toast.LENGTH_SHORT).show()
                 isLoadingLocation = false
             }
         )

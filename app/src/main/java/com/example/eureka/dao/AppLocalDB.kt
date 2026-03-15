@@ -16,7 +16,7 @@ object AppLocalDB {
             klass = AppLocalDbRepository::class.java,
             name = "eureka.db"
         )
-            .fallbackToDestructiveMigration(true)
+            .fallbackToDestructiveMigration()
             .build()
     }
 }

@@ -2,7 +2,7 @@ package com.example.eureka.features.post_list
 
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eureka.databinding.PostRowLayoutBinding
-import com.example.eureka.models.FireBaseModel
+import com.example.eureka.models.User.UserFirebaseModel
 import com.example.eureka.models.Post.Post
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
@@ -12,6 +12,8 @@ class PostRowViewHolder(
     private val binding: PostRowLayoutBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
+    private val userFirebaseModel = UserFirebaseModel()
+
     fun bind(post: Post) {
         binding.titleText.text = post.type?.name ?: post.category.name
         binding.dateText.text = formatDate(post.createdAt)
@@ -19,7 +21,7 @@ class PostRowViewHolder(
         binding.bodyText.text = post.text
         binding.detailsTag.text = post.category.name
 
-        FireBaseModel().getUserById(post.ownerId) { user ->
+        userFirebaseModel.getUserById(post.ownerId) { user ->
             if (user != null) {
                 binding.descriptionText.text = "פורסם על ידי: ${user.fullname}"
             } else {

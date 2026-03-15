@@ -10,9 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.eureka.R
 import com.example.eureka.databinding.FragmentPostDetailBinding
-import com.example.eureka.models.FireBaseModel
 import com.example.eureka.models.Post.Post
+import com.example.eureka.models.Post.PostFirebaseModel
 import com.example.eureka.models.Post.PostsRepository
+import com.example.eureka.models.User.UserFirebaseModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.squareup.picasso.Picasso
@@ -48,7 +49,7 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
     private fun loadPost() {
         val postId = arguments?.getString("postId")
         if (postId != null) {
-            FireBaseModel().getPostById(postId) { post ->
+            PostFirebaseModel().getPostById(postId) { post ->
                 if (post != null) {
                     displayPost(post)
                 }
@@ -72,7 +73,7 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
             binding?.ownerActionsLayout?.visibility = View.GONE
         }
 
-        FireBaseModel().getUserById(post.ownerId) { user ->
+        UserFirebaseModel().getUserById(post.ownerId) { user ->
             if (user != null) {
                 binding?.ownerText?.text = "פורסם על ידי: ${user.fullname}"
             } else {

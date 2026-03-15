@@ -4,12 +4,11 @@ import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import com.example.eureka.dao.AppLocalDB
-import com.example.eureka.models.FireBaseModel
 import java.util.concurrent.Executors
 
 class PostsRepository private constructor() {
 
-    private val firebaseModel = FireBaseModel()
+    private val firebaseModel = PostFirebaseModel()
     private val database = AppLocalDB.db
     private val executor = Executors.newSingleThreadExecutor()
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -17,6 +16,30 @@ class PostsRepository private constructor() {
     companion object {
         val shared = PostsRepository()
         private const val POSTS_LIMIT = 50
+    }
+
+    init {
+        // Start listening to both types of posts in real-time
+        listenToPosts(PostType.LOST)
+        listenToPosts(PostType.FOUND)
+    }
+
+    private fun listenToPosts(type: PostType) {
+        firebaseModel.listenToPostsByType(type) { updatedPosts, deletedIds ->
+            executor.execute {
+                // Update or Insert new/modified posts
+                for (post in updatedPosts) {
+                    database.postDao.insert(post)
+                }
+                
+                // Delete removed posts from local DB
+                for (id in deletedIds) {
+                    // We need a way to delete by ID if we only have the ID
+                    // For now, if your DAO supports it, or use a dummy post with that ID
+                    database.postDao.deleteById(id)
+                }
+            }
+        }
     }
 
     fun getPostsByType(type: PostType): LiveData<MutableList<Post>> {
@@ -27,6 +50,8 @@ class PostsRepository private constructor() {
         type: PostType,
         onDone: () -> Unit
     ) {
+        // With real-time listeners, refresh is technically not needed for new data,
+        // but we keep it for manual triggers if necessary.
         val lastUpdated = PostLastUpdatedManager.getLastUpdated(type)
 
         firebaseModel.getPostsByType(lastUpdated, type, POSTS_LIMIT) { posts ->
@@ -41,7 +66,6 @@ class PostsRepository private constructor() {
                 }
 
                 PostLastUpdatedManager.setLastUpdated(type, time)
-
                 onDone()
             }
         }
